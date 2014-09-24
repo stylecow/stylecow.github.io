@@ -1,0 +1,141 @@
+@import url(http://fonts.googleapis.com/css?family=Lora:400);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,800);
+@import url(csans.css);
+@import url(csans.helpers.css);
+
+:root {
+	--black: gray(20%);
+	--color: #505166;
+	--font-sans: 'Open Sans', Helvetica, sans-serif;
+	--font-serif: 'Lora', Georgia, sans-serif;
+}
+
+body {
+	color: var(--black);
+	font-family: var(--font-serif);
+	position: relative;
+}
+
+h1, h2, h3, strong {
+	font-family: var(--font-sans);
+	font-weight: 400;
+}
+
+a {
+	color: var(--color);
+
+	&:hover {
+		text-decoration: none;
+	}
+}
+p {
+	margin: 0.5em 0;
+}
+pre {
+	margin: 1em 0;
+
+	code {
+		color: white;
+		background: var(--color);
+		display: block;
+		text-shadow: 0 1px 3px black;
+
+		&::selection {
+			background: color(var(--color) lightness(-20));
+		}
+	}
+}
+code {
+	border-radius: 3px;
+	background: color(var(--color) tint(10));
+	padding: 0.2em 0.4em;
+}
+
+.page-header {
+	background: color(var(--color) lightness(80));
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 80vh;
+	color: var(--color);
+	font-family: var(--font-sans);
+
+	h1 {
+		font-family: var(--font-serif);
+		font-size: 5rem;
+		font-weight: normal;
+		margin: 0;
+	}
+	p {
+		font-size: 2rem;
+		margin: 0;
+	}
+}
+
+.page-navigation {
+	position: sticky;
+	top: 0;
+
+	ul {
+		display: flex;
+		list-style: none;
+		justify-content: center;
+		background: white;
+		box-shadow: 0 0 1px color(black a(0.3));
+		font-family: var(--font-sans);
+		font-weight: 400;
+
+		a {
+			padding: 1.6em;
+			color: var(--color);
+			text-transform: uppercase;
+			font-size: 0.9em;
+			text-decoration: none;
+			border-bottom: solid 4px white;
+			border-top: solid 4px white;
+			display: block;
+
+			&:hover {
+				border-bottom-color: color(var(--color) tint(50));
+			}
+		}
+
+		li.active a {
+			border-bottom-color: var(--color);
+		}
+	}
+}
+
+.page-content {
+	max-width: 35em;
+	margin: 0 auto;
+	padding: 20px;
+	font-size: 1.2rem;
+	line-height: 1.5;
+
+	h2 {
+		padding-top: 2.5em;
+		margin-top: 0;
+		font-size: 3.4rem;
+		letter-spacing: -0.05em;
+		line-height: 1;
+		color: var(--color);
+	}
+
+	h3 {
+		font-size: 1.6rem;
+		line-height: 1;
+		color: var(--color);
+		margin-top: 2em;
+	}
+}
+
+.page-footer {
+	text-align: center;
+	font-size: 0.8em;
+	font-family: var(--font-sans);
+	padding: 4em 0;
+	border-top: solid 1px color(black a(0.15));
+	margin-top: 4em;
+}

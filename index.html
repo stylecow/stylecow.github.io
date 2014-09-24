@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+
+		<title>stylecow</title>
+
+		<link rel="stylesheet" type="text/css" href="css/styles.min.css">
+	</head>
+
+	<body>
+		<main>
+			<header class="page-header">
+				<h1 class="visually-hidden">stylecow</h1>
+				<img src="css/stylecow.svg">
+				<p>Modern CSS to all browsers</p>
+			</header>
+
+			<nav class="page-navigation">
+				<ul class="nav">
+					<li><a href="#welcome">Welcome</a></li>
+					<li><a href="#quick-start">Quick start</a></li>
+					<li><a href="#plugins">Plugins</a></li>
+					<li><a href="https://github.com/stylecow/stylecow">Get the code</a></li>
+				</ul>
+			</nav>
+
+			<div class="page-content">
+				<h2 id="welcome">Why another CSS preprocessor?</h2>
+
+				<p>The main purpose of <strong>stylecow</strong> is to bring more CSS support to all browsers. Stylecow converts your code to be more compatible with all browsers adding vendor prefixes, fixing bugs, generating polyfills, to emulate some non-supporting css properties, etc.</p>
+
+				<p>You can also play with new (or future) css features such variables, nested rules or color manipulation using the w3c syntax. If you need more power, you can use other  tools like SASS or LESS and use stylecow only to fix your code for more compatibility.</p>
+
+				<h2 id="quick-start">Quick start</h2>
+
+				<p>Use npm to install the library (you can use <code>-g</code> to install it globally):</p>
+
+				<pre><code>npm install stylecow -g</code></pre>
+
+				<p>First you have to create a config file where to save the minimal browser supported, code style, plugins used, etc. To create it in an interactive way:</p>
+
+				<pre><code>stylecow config --create</code></pre>
+
+				<p>Now you have a config file like like the following:</p>
+
+				<pre><code>{
+	"input": "styles.css",
+	"output": "styles.min.css",
+	"support": {
+		"explorer": 8,
+		"firefox": 30,
+		"chrome": 35,
+		"safari": 5,
+		"opera": 22,
+		"android": 4,
+		"ios": 6
+	},
+	"plugins": [
+		"color",
+		"flex",
+		"variables"
+	],
+	"code": "minify"
+}
+</code></pre>
+				<p>As you can see, the input file "styles.css" is loaded and transformed according with the minimal browser support defined in "support" property, executing the plugins "color", "flex" and "variables". The output code will be minified and saved in styles.min.css.</p>
+
+				<p>To execute the config file:</p>
+
+				<pre><code>stylecow execute my-config.json</code></pre>
+
+				<p>You can use the option <code>--watch</code> to keep stylecow watching the css files and regenerate the output code when any input file changes.</p>
+
+				<p>Use <code>stylecow execute -h</code> to view all available options.</p>
+
+				<h2 id="plugins">Plugins</h2>
+
+				<p>All css transformations are done via plugins. Each plugin deals with a specific css feature. For example, there is a plugin to play with variables using the <a href="http://www.w3.org/TR/css-variables/">CSS Variables Module 1 syntax</a>, other to manipulate the colors using the <a href="http://dev.w3.org/csswg/css-color/">CSS Colors Module Level 4</a> and other to work with <a href="http://www.w3.org/TR/css3-flexbox/">Flexible Box Layout Module Level 1</a> that generates the fallback code for browsers supporting the old syntax (ie10 and some webkit browsers).</p>
+
+				<p>The available plugins are the following:</p>
+
+				<h3>Support for CSS incoming features:</h3>
+
+				<ul>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-color">color</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-matches">matches</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-nested-rules">nested-rules</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-variables">variables</a></li>
+				</ul>
+
+				<h3>Utilities:</h3>
+
+				<ul>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-import">import</a> (To insert the code of the <code>@import</code> rules with relative urls)</li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-source-comment">source-comment</a></li>
+				</ul>
+
+				<h3>Vendor prefixes, polyfills, browser bugs fixers:</h3>
+
+				<ul>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-animation">animation</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-appearance">appearance</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-background">background</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-border">border</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-box-shadow">box-shadow</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-box-sizing">box-sizing</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-calc">calc</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-clip">clip</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-column">column</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-cursor">cursor</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-document">document</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-flex">flex</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-float">float</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-fullscreen">fullscreen</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-grid">grid</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-initial">initial</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-inline-block">inline-block</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-linear-gradient">linear-gradient</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-mask">mask</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-min-height">min-height</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-object">object</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-opacity">opacity</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-pseudoelements">pseudoelements</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-transform">transform</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-transition">transition</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-type">type</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-region">region</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-rem">rem</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-sizing">sizing</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-sticky">sticky</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-user-select">user-select</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-vmin">vmin</a></li>
+				</ul>
+
+				<h3>Emulation of some features in old explorers using ms-filters:</h3>
+
+				<ul>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-background-alpha">msfilter-background-alpha</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-linear-gradient">msfilter-linear-gradient</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-transform">msfilter-transform</a></li>
+				</ul>
+			</div>
+
+			<footer class="page-footer">
+				<p>Project maintained by <a href="https://github.com/oscarotero">oscarotero</a> | <a href="https://github.com/stylecow/stylecow/blob/master/LICENSE">MIT license</a></p>
+			</footer>
+		</main>
+
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/bootstrap.min.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function () {
+				$('body').scrollspy({target: '.page-navigation'});
+			});
+		</script>
+	</body>
+</html>
