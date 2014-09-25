@@ -21,6 +21,7 @@
 					<li><a href="#welcome">Welcome</a></li>
 					<li><a href="#quick-start">Quick start</a></li>
 					<li><a href="#plugins">Plugins</a></li>
+					<li><a href="#demo">Demo</a></li>
 					<li><a href="https://github.com/stylecow/stylecow">Get the code</a></li>
 				</ul>
 			</nav>
@@ -73,6 +74,31 @@
 				<p>You can use the option <code>--watch</code> to keep stylecow watching the css files and regenerate the output code when any input file changes.</p>
 
 				<p>Use <code>stylecow execute -h</code> to view all available options.</p>
+
+				<h3>Programatic usage</h3>
+
+				<p>Here's an example of using stylecow in node:</p>
+
+				<pre><code>var stylecow = require('stylecow');
+var css = stylecow.readFile('styles.css');
+var codeStyle = stylecow.getCodeStyle('minify');
+
+css.convert([
+	"color",
+	"flex",
+	"variables"
+], {
+	"explorer": 8,
+	"firefox": 30,
+	"chrome": 35,
+	"safari": 5,
+	"opera": 22,
+	"android": 4,
+	"ios": 6
+});
+
+var code = css.toCode(codeStyle);
+</code></pre>
 
 				<h2 id="plugins">Plugins</h2>
 
@@ -140,7 +166,72 @@
 					<li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-linear-gradient">msfilter-linear-gradient</a></li>
 					<li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-transform">msfilter-transform</a></li>
 				</ul>
+
+				<h2 id="demo">Try the demo!</h2>
 			</div>
+
+			<form class="demo">
+				<div class="demo-code">
+					<label>
+						Input:
+						<textarea id="input-code" placeholder="Paste here your css code"></textarea>
+					</label>
+					<button type="submit">Convert &rarr;</button>
+					<label>
+						Output:
+						<textarea id="output-code"></textarea>
+					</label>
+				</div>
+
+				<ul class="demo-plugins">
+					<li><label><input type="checkbox" checked value="animation"> animation</label></li>
+					<li><label><input type="checkbox" checked value="appearance"> appearance</label></li>
+					<li><label><input type="checkbox" checked value="background"> background</label></li>
+					<li><label><input type="checkbox" checked value="border"> border</label></li>
+					<li><label><input type="checkbox" checked value="box-shadow"> box-shadow</label></li>
+					<li><label><input type="checkbox" checked value="box-sizing"> box-sizing</label></li>
+					<li><label><input type="checkbox" checked value="calc"> calc</label></li>
+					<li><label><input type="checkbox" checked value="clip"> clip</label></li>
+					<li><label><input type="checkbox" checked value="color"> color</label></li>
+					<li><label><input type="checkbox" checked value="column"> column</label></li>
+					<li><label><input type="checkbox" checked value="cursor"> cursor</label></li>
+					<li><label><input type="checkbox" checked value="document"> document</label></li>
+					<li><label><input type="checkbox" checked value="flex"> flex</label></li>
+					<li><label><input type="checkbox" checked value="float"> float</label></li>
+					<li><label><input type="checkbox" checked value="fullscreen"> fullscreen</label></li>
+					<li><label><input type="checkbox" checked value="grid"> grid</label></li>
+					<li><label><input type="checkbox" checked value="initial"> initial</label></li>
+					<li><label><input type="checkbox" checked value="inline-block"> inline-block</label></li>
+					<li><label><input type="checkbox" checked value="linear-gradient"> linear-gradient</label></li>
+					<li><label><input type="checkbox" checked value="mask"> mask</label></li>
+					<li><label><input type="checkbox" checked value="matches"> matches</label></li>
+					<li><label><input type="checkbox" checked value="min-height"> min-height</label></li>
+					<li><label><input type="checkbox" checked value="nested-rules"> nested-rules</label></li>
+					<li><label><input type="checkbox" checked value="object"> object</label></li>
+					<li><label><input type="checkbox" checked value="opacity"> opacity</label></li>
+					<li><label><input type="checkbox" checked value="pseudoelements"> pseudoelements</label></li>
+					<li><label><input type="checkbox" checked value="region"> region</label></li>
+					<li><label><input type="checkbox" checked value="rem"> rem</label></li>
+					<li><label><input type="checkbox" checked value="sizing"> sizing</label></li>
+					<li><label><input type="checkbox" checked value="sticky"> sticky</label></li>
+					<li><label><input type="checkbox" checked value="transform"> transform</label></li>
+					<li><label><input type="checkbox" checked value="transition"> transition</label></li>
+					<li><label><input type="checkbox" checked value="type"> type</label></li>
+					<li><label><input type="checkbox" checked value="user-select"> user-select</label></li>
+					<li><label><input type="checkbox" checked value="variables"> variables</label></li>
+					<li><label><input type="checkbox" checked value="vmin"> vmin</label></li>
+				</ul>
+
+				<ul class="demo-support">
+					<li><label for="support-ie">Internet Explorer</label> <input type="number" id="support-ie" name="explorer" min="0" value="8"></li>
+					<li><label for="support-ff">Mozilla Firefox</label> <input type="number" id="support-ff" name="firefox" min="0" value="30"></li>
+					<li><label for="support-gc">Google Chrome</label> <input type="number" id="support-gc" name="chrome" min="0" value="35"></li>
+					<li><label for="support-sf">Apple Safari</label> <input type="number" id="support-sf" name="safari" min="0" value="5"></li>
+					<li><label for="support-op">Opera</label> <input type="number" id="support-op" name="opera" min="0" value="22"></li>
+					<li><label for="support-an">Android</label> <input type="number" id="support-an" name="android" min="0" value="4"></li>
+					<li><label for="support-ios">iOS</label> <input type="number" id="support-ios" name="ios" min="0" value="6"></li>
+				</ul>
+			</form>
 
 			<footer class="page-footer">
 				<p>Project maintained by <a href="https://github.com/oscarotero">oscarotero</a> | <a href="https://github.com/stylecow/stylecow/blob/master/LICENSE">MIT license</a></p>
@@ -149,9 +240,42 @@
 
 		<script type="text/javascript" src="js/jquery.min.js"></script>
 		<script type="text/javascript" src="js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/bundle.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function () {
 				$('body').scrollspy({target: '.page-navigation'});
+
+
+				//Stylecow code
+				var stylecow = require('./main.js');
+
+				var $input = $('#input-code');
+				var $output = $('#output-code');
+				var $plugins = $('.demo-plugins input');
+				var $support = $('.demo-support input');
+
+				$('.demo').submit(function (e) {
+					e.preventDefault();
+
+					var plugins = [];
+					var support = {};
+
+					$plugins.each(function () {
+						var $input = $(this);
+
+						if ($input.is(':checked')) {
+							plugins.push($input.val());
+						}
+					});
+
+					$support.each(function () {
+						var $input = $(this);
+
+						support[$input.attr('name')] = $input.val();
+					});
+
+					$output.val(stylecow($input.val(), plugins, support));
+				});
 			});
 		</script>
 	</body>

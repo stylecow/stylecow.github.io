@@ -1,10 +1,10 @@
-@import url(http://fonts.googleapis.com/css?family=Lora:400);
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,800);
+@import url(//fonts.googleapis.com/css?family=Lora:400);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:300,400,800);
 @import url(csans.css);
 @import url(csans.helpers.css);
 
 :root {
-	--black: gray(20%);
+	--black: #282933;
 	--color: #505166;
 	--font-sans: 'Open Sans', Helvetica, sans-serif;
 	--font-serif: 'Lora', Georgia, sans-serif;
@@ -36,9 +36,8 @@ pre {
 
 	code {
 		color: white;
-		background: var(--color);
+		background: var(--black);
 		display: block;
-		text-shadow: 0 1px 3px black;
 
 		&::selection {
 			background: color(var(--color) lightness(-20));
@@ -49,16 +48,17 @@ code {
 	border-radius: 3px;
 	background: color(var(--color) tint(10));
 	padding: 0.2em 0.4em;
+	font-size: 1rem;
 }
 
 .page-header {
-	background: color(var(--color) lightness(80));
+	background: color(var(--color) lightness(50));
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	height: 80vh;
-	color: var(--color);
+	color: white;
 	font-family: var(--font-sans);
 
 	h1 {
@@ -85,6 +85,7 @@ code {
 		box-shadow: 0 0 1px color(black a(0.3));
 		font-family: var(--font-sans);
 		font-weight: 400;
+		margin: 0;
 
 		a {
 			padding: 1.6em;
@@ -120,13 +121,13 @@ code {
 		font-size: 3.4rem;
 		letter-spacing: -0.05em;
 		line-height: 1;
-		color: var(--color);
+		color: var(--black);
 	}
 
 	h3 {
 		font-size: 1.6rem;
 		line-height: 1;
-		color: var(--color);
+		color: var(--black);
 		margin-top: 2em;
 	}
 }
@@ -136,6 +137,97 @@ code {
 	font-size: 0.8em;
 	font-family: var(--font-sans);
 	padding: 4em 0;
-	border-top: solid 1px color(black a(0.15));
-	margin-top: 4em;
+}
+
+.demo {
+	background: var(--color);
+	font-family: var(--font-sans);
+	color: color(var(--color) tint(50));
+	padding: 40px 30px;
+	margin-top: 40px;
+}
+
+.demo-code {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+
+	> label {
+		flex: 1;
+		font-weight: 800;
+		text-align: center;
+		text-transform: uppercase;
+	}
+
+	textarea {
+		width: 100%;
+		height: 60vh;
+		padding: 10px;
+		margin-top: 15px;
+		font-family:"Courier new",Courier,monospace;
+		background: none;
+		border: solid 1px var(--black);
+		box-shadow: inset 0 0 5px var(--black);
+		color: white;
+		border-radius: 3px;
+		resize: none;
+
+		&::selection {
+			background: black;
+		}
+	}
+
+	button {
+		cursor: pointer;
+		background: white;
+		color: var(--color);
+		border: none;
+		padding: 1em;
+		font-size: 1.2rem;
+		font-weight: 800;
+		text-transform: uppercase;
+		border-radius: 3px;
+		white-space: nowrap;
+		box-shadow: 0 0 3px black;
+		margin: 20px;
+
+		&:hover {
+			color: var(--black);
+			background: color(var(--color) tint(10));
+			box-shadow: 0 0 5px black;
+		}
+	}
+}
+
+.demo-plugins {
+	list-style: none;
+	margin: 0;
+	padding: 40px 0;
+	column-width: 12em;
+
+	label {
+		cursor: pointer;
+		font-size: 0.9rem;
+	}
+}
+
+.demo-support {
+	list-style: none;
+	margin: 0;
+	padding: 40px 0;
+	display: flex;
+	justify-content: space-between;
+
+	label {
+		display: block;
+		text-align: center;
+		flex: 1;
+		margin-bottom: 0.3em;
+	}
+
+	input {
+		text-align: center;
+		border: none;
+		border-radius: 3px;
+	}
 }
