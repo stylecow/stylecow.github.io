@@ -1,11 +1,5 @@
 module.exports = function(grunt) {
 	grunt.initConfig({
-		uglify: {
-			build: {
-				src: 'js/bundle.js',
-				dest: 'js/bundle.min.js'
-			}
-		},
 		browserify: {
 			dist: {
 				files: {
@@ -26,6 +20,18 @@ module.exports = function(grunt) {
 					'stylecow-plugin-rem',
 					'stylecow-plugin-variables'
 				]
+			}
+		},
+		concat: {
+			dist: {
+				src: ['js/jquery.min.js', 'js/bootstrap.min.js', 'js/bundle.js'],
+				dest: 'js/bundle.js'
+			}
+		},
+		uglify: {
+			build: {
+				src: 'js/bundle.js',
+				dest: 'js/bundle.js'
 			}
 		},
 		stylecow: {
@@ -64,7 +70,8 @@ module.exports = function(grunt) {
 
 	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-stylecow');
 
-	grunt.registerTask('default', ['browserify', 'uglify', 'stylecow']);
+	grunt.registerTask('default', ['browserify', 'concat', 'uglify', 'stylecow']);
 };

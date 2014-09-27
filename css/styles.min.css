@@ -5,24 +5,24 @@
  * Some code has been extracted from http://necolas.github.com/normalize.css/ (thank you) */
 /* Root elements */
 html {
-	text-rendering: optimizeLegibility;
-	color: #000;
-	text-align: left;
-	line-height: 1.4;
-	font-family: sans-serif;
 	font-size: 100%;
+	line-height: 1.4;
+	text-align: left;
+	color: #000;
+	text-rendering: optimizeLegibility;
+	font-family: sans-serif;
 }
 body {
 	margin: 0;
 }
 /* Block elements */
-summary, section, pre, p, nav, hr, hgroup, header, h6, h5, h4, h3, h2, h1, footer, figure, figcaption, div, details, blockquote, aside, article, address, video, embed, object, img, iframe, canvas, audio {
-	outline: none;
-	font-size: 1em;
-	display: block;
-	border: none;
-	padding: 0;
+audio, canvas, iframe, img, object, embed, video, address, article, aside, blockquote, details, div, figcaption, figure, footer, h1, h2, h3, h4, h5, h6, header, hgroup, hr, nav, p, pre, section, summary {
 	margin: 0;
+	padding: 0;
+	border: none;
+	display: block;
+	font-size: 1em;
+	outline: none;
 }
 address {
 	font-style: normal;
@@ -34,20 +34,20 @@ svg:not(:root) {
 	overflow: hidden;
 }
 hr {
-	box-sizing: content-box;
-	border-top: 1px solid #000;
-	background: none;
 	height: 0;
+	background: none;
+	border-top: 1px solid #000;
+	box-sizing: content-box;
 }
-template, [hidden] {
+[hidden], template {
 	display: none;
 }
-h6, h5, h4, h3, h2, h1 {
-	margin: 1em 0 0.5em 0;
-	line-height: 1.1;
+h1, h2, h3, h4, h5, h6 {
 	font-weight: bold;
+	line-height: 1.1;
+	margin: 1em 0 0.5em 0;
 }
-hgroup h6, hgroup h5, hgroup h4, hgroup h3, hgroup h2, hgroup h1, header h6, header h5, header h4, header h3, header h2, header h1 {
+header h1, header h2, header h3, header h4, header h5, header h6, hgroup h1, hgroup h2, hgroup h3, hgroup h4, hgroup h5, hgroup h6 {
 	margin: 0;
 }
 h1 {
@@ -59,28 +59,28 @@ h2 {
 h3 {
 	font-size: 1.2em;
 }
-h6, h5, h4 {
+h4, h5, h6 {
 	font-size: 1em;
 }
 /* Inline block elements */
-video, embed, object, img, iframe, canvas, audio {
+audio, canvas, iframe, img, object, embed, video {
 	display: inline-block;
 }
 audio:not([controls]) {
-	height: 0;
 	display: none;
+	height: 0;
 }
 img {
-	border: 0;
 	vertical-align: middle;
+	border: 0;
 }
 /* Inline elements */
-var, time, sup, sub, strong, span, small, samp, q, meter, mark, kbd, ins, i, em, dfn, del, command, code, cite, b, abbr, a {
-	font-size: 1em;
-	display: inline;
-	border: 0;
-	padding: 0;
+a, abbr, b, cite, code, command, del, dfn, em, i, ins, kbd, mark, meter, q, samp, small, span, strong, sub, sup, time, var {
 	margin: 0;
+	padding: 0;
+	border: 0;
+	display: inline;
+	font-size: 1em;
 }
 a {
 	background: transparent;
@@ -88,32 +88,32 @@ a {
 a:focus {
 	outline: thin dotted;
 }
-i, dfn, em {
+em, dfn, i {
 	font-style: italic;
 }
-b, strong {
+strong, b {
 	font-weight: bold;
 }
-sup, sub, small {
+small, sub, sup {
 	font-size: 80%;
 }
 mark {
-	color: #000;
 	background-color: #FF0;
+	color: #000;
 }
-dfn[title], abbr[title] {
-	cursor: help;
+abbr[title], dfn[title] {
 	border-bottom: 1px dotted;
+	cursor: help;
 }
 mark {
-	color: #000;
 	background: #FF0;
+	color: #000;
 }
-sup, sub {
-	vertical-align: baseline;
-	position: relative;
-	line-height: 0;
+sub, sup {
 	font-size: 75%;
+	line-height: 0;
+	position: relative;
+	vertical-align: baseline;
 }
 sup {
 	top: -0.5em;
@@ -121,65 +121,65 @@ sup {
 sub {
 	bottom: -0.25em;
 }
-q, blockquote {
+blockquote, q {
 	quotes: none;
 }
-q:after, q:before, blockquote:after, blockquote:before {
-	content: none;
+blockquote:before, blockquote:after, q:before, q:after {
 	content: "";
+	content: none;
 }
 /* Forms */
-legend, fieldset, form {
-	display: block;
-	border: 0;
-	padding: 0;
+form, fieldset, legend {
 	margin: 0;
+	padding: 0;
+	border: 0;
+	display: block;
 }
-textarea, select, output, option, optgroup, label, keygen, input, datalist, button {
-	font-family: inherit;
-	line-height: 1.2;
+button, datalist, input, keygen, label, optgroup, option, output, select, textarea {
 	font-size: 100%;
+	line-height: 1.2;
+	font-family: inherit;
 }
 legend {
-	border: 0;
 	font-weight: bold;
+	border: 0;
 }
 input {
 	overflow-y: visible;
 }
-textarea, select, input, button {
-	text-transform: none;
-	vertical-align: middle;
-	margin: 0;
+button, input, select, textarea {
 	box-sizing: border-box;
+	margin: 0;
+	vertical-align: middle;
+	text-transform: none;
 }
 textarea {
-	resize: vertical;
-	vertical-align: top;
-	overflow-y: auto;
-	height: 4em;
 	width: 12em;
+	height: 4em;
+	overflow-y: auto;
+	vertical-align: top;
+	resize: vertical;
 }
-input, button {
+button, input {
 	line-height: normal;
 }
-input[type="submit"], input[type="reset"], input[type="button"], button {
-	overflow: visible;
-	width: auto;
+button, input[type="button"], input[type="reset"], input[type="submit"] {
 	cursor: pointer;
+	width: auto;
+	overflow: visible;
 }
-input[type="radio"], input[type="checkbox"] {
+input[type="checkbox"], input[type="radio"] {
 	padding: 0;
 }
-html input[disabled], button[disabled] {
+button[disabled], html input[disabled] {
 	cursor: default;
 }
 /* Lists */
-dd, dt, dl, ul, ol {
-	padding: 0;
+ol, ul, dl, dt, dd {
 	margin: 0;
+	padding: 0;
 }
-dd, ul, ol {
+ol, ul, dd {
 	margin-left: 1.5em;
 }
 dt {
@@ -193,43 +193,43 @@ ul {
 }
 /* Tables */
 table {
-	border-spacing: 0;
-	border-collapse: collapse;
-	padding: 0;
 	margin: 0;
+	padding: 0;
+	border-collapse: collapse;
+	border-spacing: 0;
 }
-th, caption {
+caption, th {
 	font-weight: bold;
 }
-td, th {
-	border: 1px solid #CCC;
-	padding: 0;
+th, td {
 	text-align: left;
+	padding: 0;
+	border: 1px solid #CCC;
 }
 /* Monospace elements */
-samp, kbd, code, pre {
-	white-space: pre;
-	line-height: 1.5;
+pre, code, kbd, samp {
 	font-family: "Courier new", Courier, monospace;
+	line-height: 1.5;
+	white-space: pre;
 }
 pre {
-	word-wrap: break-word;
-	white-space: pre-line;
-	white-space: pre-wrap;
 	white-space: pre;
+	white-space: pre-wrap;
+	white-space: pre-line;
+	word-wrap: break-word;
 }
 /* Hacks and vendor prefixes */
 html {
-	-webkit-text-size-adjust: 100%;
 	-ms-text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
 }
-textarea, select, input, button {
-	-webkit-box-sizing: border-box;
+button, input, select, textarea {
 	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
 }
 textarea {
-	-moz-appearance: textfield;
 	-webkit-appearance: textfield;
+	-moz-appearance: textfield;
 }
 hr {
 	-moz-box-sizing: content-box;
@@ -238,53 +238,53 @@ hr {
 input[type="search"]::-webkit-search-decoration {
 	-webkit-appearance: none;
 }
-input::-moz-focus-inner, button::-moz-focus-inner {
-	padding: 0;
+button::-moz-focus-inner, input::-moz-focus-inner {
 	border: 0;
+	padding: 0;
 }
-input[type="submit"], input[type="reset"], html input[type="button"], button {
+button, html input[type="button"], input[type="reset"], input[type="submit"] {
 	-webkit-appearance: button;
 }
-input::-moz-focus-inner, button::-moz-focus-inner {
-	padding: 0;
+button::-moz-focus-inner, input::-moz-focus-inner {
 	border: 0;
+	padding: 0;
 }
 /* * cSans Helpers
  *
  * Some helpers classes for generic purposes */
 /* Image replacement: Must overwrite background-image, width and height properties in your css */
-.image, .image a {
-	color: transparent;
-	border: none;
-	text-align: left;
-	overflow: hidden;
-	display: inline-block;
-	text-indent: -2px;
-	letter-spacing: -20px;
-	line-height: 0em !important;
-	font-size: 0px !important;
-	outline: none;
-	padding: 0;
-	margin: 0;
-	background-color: transparent;
+.image a, .image {
 	background-repeat: no-repeat;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+	outline: none;
+	font-size: 0px !important;
+	line-height: 0em !important;
+	letter-spacing: -20px;
+	text-indent: -2px;
+	display: inline-block;
+	overflow: hidden;
+	text-align: left;
+	border: none;
+	color: transparent;
 }
-h6.image, h5.image, h4.image, h3.image, h2.image, h1.image {
+h1.image, h2.image, h3.image, h4.image, h5.image, h6.image {
 	display: block;
 }
-button.image, input.image, a.image {
+a.image, input.image, button.image {
 	cursor: pointer;
 }
 .image a {
-	height: inherit;
-	height: 100%;
-	width: 100%;
 	display: block;
+	width: 100%;
+	height: 100%;
+	height: inherit;
 }
 /* Clear: Applies clearfix */
-.clear:after, .clear:before {
-	display: table;
+.clear:before, .clear:after {
 	content: "";
+	display: table;
 }
 .clear:after {
 	clear: both;
@@ -297,45 +297,45 @@ button.image, input.image, a.image {
 	visibility: hidden;
 }
 .visually-hidden {
-	margin: -1px !important;
-	padding: 0 !important;
-	overflow: hidden !important;
-	height: 1px !important;
-	width: 1px !important;
-	position: absolute !important;
-	clip: rect(0 0 0 0) !important;
 	border: 0 !important;
+	clip: rect(0 0 0 0) !important;
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	overflow: hidden !important;
+	padding: 0 !important;
+	margin: -1px !important;
 }
 .visually-hidden.focusable:focus {
-	margin: 0;
-	height: auto;
-	width: auto;
-	overflow: visible;
-	position: static;
 	clip: auto;
+	position: static;
+	overflow: visible;
+	width: auto;
+	height: auto;
+	margin: 0;
 }
 /* Search input: Make search input equal in all browsers (with the class .no-appearance) */
 input[type="search"].no-appearance {
-	-moz-appearance: textfield;
 	-webkit-appearance: textfield;
+	-moz-appearance: textfield;
 }
-input[type="search"].no-appearance::-webkit-search-results-decoration, input[type="search"].no-appearance::-webkit-search-results-button, input[type="search"].no-appearance::-webkit-search-cancel-button, input[type="search"].no-appearance::-webkit-search-decoration {
+input[type="search"].no-appearance::-webkit-search-decoration, input[type="search"].no-appearance::-webkit-search-cancel-button, input[type="search"].no-appearance::-webkit-search-results-button, input[type="search"].no-appearance::-webkit-search-results-decoration {
 	display: none;
 }
 /* Aspect ratio: Convert videos, iframes, images, etc to be elastic keeping the aspect ratio */
 .aspect-ratio {
-	padding: 0;
-	overflow: hidden;
-	height: 0;
-	position: relative;
 	max-width: 100%;
+	position: relative;
+	height: 0;
+	overflow: hidden;
+	padding: 0;
 }
-.aspect-ratio .aspect-ratio-target, .aspect-ratio embed, .aspect-ratio object, .aspect-ratio iframe {
-	height: 100%;
-	width: 100%;
-	left: 0;
-	top: 0;
+.aspect-ratio iframe, .aspect-ratio object, .aspect-ratio embed, .aspect-ratio .aspect-ratio-target {
 	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 }
 /* Some predefined aspect ratios: 16:9 and 4:3 */
 .aspect-ratio-16-9 {
@@ -345,13 +345,13 @@ input[type="search"].no-appearance::-webkit-search-results-decoration, input[typ
 	padding-bottom: 75%;
 }
 body {
-	position: relative;
-	font-family: 'Lora',Georgia,sans-serif;
 	color: #282933;
+	font-family: 'Lora',Georgia,sans-serif;
+	position: relative;
 }
-strong, h3, h2, h1 {
-	font-weight: 400;
+h1, h2, h3, strong {
 	font-family: 'Open Sans',Helvetica,sans-serif;
+	font-weight: 400;
 }
 a {
 	color: #505166;
@@ -366,9 +366,9 @@ pre {
 	margin: 1em 0;
 }
 pre code {
-	display: block;
-	background: #282933;
 	color: white;
+	background: #282933;
+	display: block;
 }
 pre code::-moz-selection {
 	background: #24242E;
@@ -377,17 +377,17 @@ pre {
 	margin: 1em 0;
 }
 pre code {
-	display: block;
-	background: #282933;
 	color: white;
+	background: #282933;
+	display: block;
 }
 pre code::-moz-selection {
 	background: #24242E;
 }
 pre code {
-	display: block;
-	background: #282933;
 	color: white;
+	background: #282933;
+	display: block;
 }
 pre code::-moz-selection {
 	background: #24242E;
@@ -396,53 +396,53 @@ pre code::selection {
 	background: #24242E;
 }
 code {
-	font-size: 1rem;
-	padding: 0.2em 0.4em;
-	background: #EDEEF0;
 	border-radius: 3px;
+	background: #EDEEF0;
+	padding: 0.2em 0.4em;
+	font-size: 1rem;
 }
 .page-header {
-	font-family: 'Open Sans',Helvetica,sans-serif;
-	color: white;
-	height: 80vh;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	display: flex;
 	background: #70728F;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 80vh;
+	color: white;
+	font-family: 'Open Sans',Helvetica,sans-serif;
 }
 .page-header p {
-	line-height: 1;
-	margin: 5px 0 0 0;
 	font-size: 2rem;
+	margin: 5px 0 0 0;
+	line-height: 1;
 }
 .page-header small {
 	color: #505166;
 }
 .page-navigation {
-	top: 0;
-	position: sticky;
 	position: -webkit-sticky;
+	position: sticky;
+	top: 0;
 }
 .page-navigation ul {
-	margin: 0;
-	font-weight: 400;
-	font-family: 'Open Sans',Helvetica,sans-serif;
-	box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
-	background: white;
-	justify-content: center;
-	list-style: none;
 	display: flex;
+	list-style: none;
+	justify-content: center;
+	background: white;
+	box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+	font-family: 'Open Sans',Helvetica,sans-serif;
+	font-weight: 400;
+	margin: 0;
 }
 .page-navigation ul a {
-	display: block;
-	border-top: solid 4px white;
-	border-bottom: solid 4px white;
-	text-decoration: none;
-	font-size: 0.9em;
-	text-transform: uppercase;
-	color: #505166;
 	padding: 1.6em;
+	color: #505166;
+	text-transform: uppercase;
+	font-size: 0.9em;
+	text-decoration: none;
+	border-bottom: solid 4px white;
+	border-top: solid 4px white;
+	display: block;
 }
 .page-navigation ul a:hover {
 	border-bottom-color: #A8A8B3;
@@ -451,124 +451,124 @@ code {
 	border-bottom-color: #505166;
 }
 .page-content {
-	line-height: 1.5;
-	font-size: 1.2rem;
-	padding: 20px;
-	margin: 0 auto;
 	max-width: 35em;
+	margin: 0 auto;
+	padding: 20px;
+	font-size: 1.2rem;
+	line-height: 1.5;
 }
 .page-content h2 {
-	color: #282933;
-	line-height: 1;
-	letter-spacing: -0.05em;
-	font-size: 3.4rem;
-	margin-top: 0;
 	padding-top: 2.5em;
+	margin-top: 0;
+	font-size: 3.4rem;
+	letter-spacing: -0.05em;
+	line-height: 1;
+	color: #282933;
 }
 .page-content h3 {
-	margin-top: 2em;
-	color: #282933;
-	line-height: 1;
 	font-size: 1.6rem;
+	line-height: 1;
+	color: #282933;
+	margin-top: 2em;
 }
 .page-footer {
-	padding: 4em 0;
-	font-family: 'Open Sans',Helvetica,sans-serif;
-	font-size: 0.8em;
 	text-align: center;
+	font-size: 0.8em;
+	font-family: 'Open Sans',Helvetica,sans-serif;
+	padding: 4em 0;
 }
 .demo {
-	margin-top: 40px;
-	padding: 40px 30px;
-	color: #A8A8B3;
-	font-family: 'Open Sans',Helvetica,sans-serif;
 	background: #505166;
+	font-family: 'Open Sans',Helvetica,sans-serif;
+	color: #A8A8B3;
+	padding: 40px 30px;
+	margin-top: 40px;
 }
 .demo-code {
-	align-items: center;
-	justify-content: space-around;
 	display: flex;
+	justify-content: space-around;
+	align-items: center;
 }
 .demo-code>label {
-	text-transform: uppercase;
-	text-align: center;
-	font-weight: 800;
 	flex: 1;
+	font-weight: 800;
+	text-align: center;
+	text-transform: uppercase;
 }
 .demo-code textarea {
-	resize: none;
-	border-radius: 3px;
-	color: white;
-	box-shadow: inset 0 0 5px #282933;
-	border: solid 1px #282933;
-	background: none;
-	font-family: "Courier new", Courier, monospace;
-	margin-top: 15px;
-	padding: 10px;
-	height: 60vh;
 	width: 100%;
+	height: 60vh;
+	padding: 10px;
+	margin-top: 15px;
+	font-family: "Courier new", Courier, monospace;
+	background: none;
+	border: solid 1px #282933;
+	box-shadow: inset 0 0 5px #282933;
+	color: white;
+	border-radius: 3px;
+	resize: none;
 }
 .demo-code textarea::-moz-selection {
 	background: black;
 }
 .demo-code button {
-	margin: 20px;
-	box-shadow: 0 0 3px black;
-	white-space: nowrap;
-	border-radius: 3px;
-	text-transform: uppercase;
-	font-weight: 800;
-	font-size: 1.2rem;
-	padding: 1em;
-	border: none;
-	color: #505166;
-	background: white;
 	cursor: pointer;
+	background: white;
+	color: #505166;
+	border: none;
+	padding: 1em;
+	font-size: 1.2rem;
+	font-weight: 800;
+	text-transform: uppercase;
+	border-radius: 3px;
+	white-space: nowrap;
+	box-shadow: 0 0 3px black;
+	margin: 20px;
 }
 .demo-code button:hover {
-	box-shadow: 0 0 5px black;
-	background: #EDEEF0;
 	color: #282933;
+	background: #EDEEF0;
+	box-shadow: 0 0 5px black;
 }
 .demo-code {
-	align-items: center;
-	justify-content: space-around;
 	display: flex;
+	justify-content: space-around;
+	align-items: center;
 }
 .demo-code>label {
-	text-transform: uppercase;
-	text-align: center;
-	font-weight: 800;
 	flex: 1;
+	font-weight: 800;
+	text-align: center;
+	text-transform: uppercase;
 }
 .demo-code textarea {
-	resize: none;
-	border-radius: 3px;
-	color: white;
-	box-shadow: inset 0 0 5px #282933;
-	border: solid 1px #282933;
-	background: none;
-	font-family: "Courier new", Courier, monospace;
-	margin-top: 15px;
-	padding: 10px;
-	height: 60vh;
 	width: 100%;
+	height: 60vh;
+	padding: 10px;
+	margin-top: 15px;
+	font-family: "Courier new", Courier, monospace;
+	background: none;
+	border: solid 1px #282933;
+	box-shadow: inset 0 0 5px #282933;
+	color: white;
+	border-radius: 3px;
+	resize: none;
 }
 .demo-code textarea::-moz-selection {
 	background: black;
 }
 .demo-code textarea {
-	resize: none;
-	border-radius: 3px;
-	color: white;
-	box-shadow: inset 0 0 5px #282933;
-	border: solid 1px #282933;
-	background: none;
-	font-family: "Courier new", Courier, monospace;
-	margin-top: 15px;
-	padding: 10px;
-	height: 60vh;
 	width: 100%;
+	height: 60vh;
+	padding: 10px;
+	margin-top: 15px;
+	font-family: "Courier new", Courier, monospace;
+	background: none;
+	border: solid 1px #282933;
+	box-shadow: inset 0 0 5px #282933;
+	color: white;
+	border-radius: 3px;
+	resize: none;
 }
 .demo-code textarea::-moz-selection {
 	background: black;
@@ -577,58 +577,58 @@ code {
 	background: black;
 }
 .demo-code button {
-	margin: 20px;
-	box-shadow: 0 0 3px black;
-	white-space: nowrap;
-	border-radius: 3px;
-	text-transform: uppercase;
-	font-weight: 800;
-	font-size: 1.2rem;
-	padding: 1em;
-	border: none;
-	color: #505166;
-	background: white;
 	cursor: pointer;
+	background: white;
+	color: #505166;
+	border: none;
+	padding: 1em;
+	font-size: 1.2rem;
+	font-weight: 800;
+	text-transform: uppercase;
+	border-radius: 3px;
+	white-space: nowrap;
+	box-shadow: 0 0 3px black;
+	margin: 20px;
 }
 .demo-code button:hover {
-	box-shadow: 0 0 5px black;
-	background: #EDEEF0;
 	color: #282933;
+	background: #EDEEF0;
+	box-shadow: 0 0 5px black;
 }
 .demo-options {
-	margin-top: 40px;
-	justify-content: center;
 	display: flex;
+	justify-content: center;
+	margin-top: 40px;
 }
-.demo-support, .demo-plugins {
-	list-style: none;
-	max-width: 15em;
+.demo-plugins, .demo-support {
 	padding: 5px 40px;
+	max-width: 15em;
+	list-style: none;
 }
-.demo-support li, .demo-plugins li {
+.demo-plugins li, .demo-support li {
 	margin: 5px 0;
 }
-.demo-support label, .demo-plugins label {
-	cursor: pointer;
+.demo-plugins label, .demo-support label {
 	font-size: 0.9rem;
+	cursor: pointer;
 }
-.demo-support li>strong, .demo-plugins li>strong {
-	margin-bottom: 1em;
-	display: block;
-	font-size: 1rem;
-	text-transform: uppercase;
+.demo-plugins li>strong, .demo-support li>strong {
 	font-weight: 800;
+	text-transform: uppercase;
+	font-size: 1rem;
+	display: block;
+	margin-bottom: 1em;
 }
-.demo-support input, .demo-plugins input {
+.demo-plugins input, .demo-support input {
 	margin-right: 5px;
 }
 .demo-support {
 	border-left: solid 1px #737485;
 }
 .demo-support input {
-	padding: 5px;
-	width: 4em;
-	border-radius: 3px;
-	border: none;
 	text-align: center;
+	border: none;
+	border-radius: 3px;
+	width: 4em;
+	padding: 5px;
 }
