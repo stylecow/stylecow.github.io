@@ -25,13 +25,13 @@ module.exports = function(grunt) {
 		concat: {
 			dist: {
 				src: ['js/jquery.min.js', 'js/bootstrap.min.js', 'js/bundle.js'],
-				dest: 'js/bundle.js'
+				dest: 'js/all.js'
 			}
 		},
 		uglify: {
 			build: {
-				src: 'js/bundle.js',
-				dest: 'js/bundle.js'
+				src: 'js/all.js',
+				dest: 'js/all.min.js'
 			}
 		},
 		stylecow: {
