@@ -14,6 +14,7 @@
 				<h1 class="visually-hidden">stylecow</h1>
 				<img src="css/stylecow.svg">
 				<p>Modern CSS to all browsers</p>
+				<small>*made with churrasco</small>
 			</header>
 
 			<nav class="page-navigation">
@@ -35,15 +36,19 @@
 
 				<h2 id="quick-start">Quick start</h2>
 
-				<p>Use npm to install the library (you can use <code>-g</code> to install it globally):</p>
+				<p>Use npm to install the library:</p>
 
-				<pre><code>npm install stylecow -g</code></pre>
+				<pre><code>npm install stylecow</code></pre>
 
-				<p>First you have to create a config file where to save the minimal browser supported, code style, plugins used, etc. To create it in an interactive way:</p>
+				<p>You have to install also some plugins. For example, to play with colors and variables</p>
 
-				<pre><code>stylecow config --create</code></pre>
+				<pre><code>npm install stylecow-plugin-color stylecow-plugin-variables</code></pre>
 
-				<p>Now you have a config file like like the following:</p>
+				<p>Now you need to create a config file where to save the minimal browser supported, code style, plugins used, etc. To create it in an interactive way:</p>
+
+				<pre><code>stylecow init</code></pre>
+
+				<p>An example of config file:</p>
 
 				<pre><code>{
 	"input": "styles.css",
@@ -59,17 +64,16 @@
 	},
 	"plugins": [
 		"color",
-		"flex",
 		"variables"
 	],
 	"code": "minify"
 }
 </code></pre>
-				<p>As you can see, the input file "styles.css" is loaded and transformed according with the minimal browser support defined in "support" property, executing the plugins "color", "flex" and "variables". The output code will be minified and saved in styles.min.css.</p>
+				<p>The input and output properties are optional you can define it later using <code>--input</code> and <code>--output</code> options</p>
 
 				<p>To execute the config file:</p>
 
-				<pre><code>stylecow execute my-config.json</code></pre>
+				<pre><code>stylecow execute stylecow_config.json</code></pre>
 
 				<p>You can use the option <code>--watch</code> to keep stylecow watching the css files and regenerate the output code when any input file changes.</p>
 
@@ -80,29 +84,33 @@
 				<p>Here's an example of using stylecow in node:</p>
 
 				<pre><code>var stylecow = require('stylecow');
-var css = stylecow.readFile('styles.css');
-var codeStyle = stylecow.getCodeStyle('minify');
 
-css.convert([
-	"color",
-	"flex",
-	"variables"
-], {
-	"explorer": 8,
-	"firefox": 30,
-	"chrome": 35,
-	"safari": 5,
-	"opera": 22,
-	"android": 4,
-	"ios": 6
+stylecow.setConfig({
+	support: {
+		explorer: 8,
+		firefox: 30,
+		chrome: 35,
+		safari: 5,
+		opera: 22,
+		android: 4,
+		ios: 6
+	},
+	plugins: [
+		"color",
+		"variables"
+	],
+	code: "minify"
 });
 
-var code = css.toCode(codeStyle);
+
+css = stylecow.convertFromFile("styles.css");
+
+var code = css.toCode();
 </code></pre>
 
 				<h2 id="plugins">Plugins</h2>
 
-				<p>All css transformations are done via plugins. Each plugin deals with a specific css feature. For example, there is a plugin to play with variables using the <a href="http://www.w3.org/TR/css-variables/">CSS Variables Module 1 syntax</a>, other to manipulate the colors using the <a href="http://dev.w3.org/csswg/css-color/">CSS Colors Module Level 4</a> and other to work with <a href="http://www.w3.org/TR/css3-flexbox/">Flexible Box Layout Module Level 1</a> that generates the fallback code for browsers supporting the old syntax (ie10 and some webkit browsers).</p>
+				<p>All css transformations are done via plugins. There are several plugins available, for example, to play with variables using the <a href="http://www.w3.org/TR/css-variables/">CSS Variables Module 1 syntax</a>, to manipulate the colors using the <a href="http://dev.w3.org/csswg/css-color/">CSS Colors Module Level 4</a>, to work with <a href="http://www.w3.org/TR/css3-flexbox/">Flexible Box Layout Module Level 1</a> generating the old syntax for ie10 and webkit browsers, etc...</p>
 
 				<p>The available plugins are the following:</p>
 
@@ -122,44 +130,18 @@ var code = css.toCode(codeStyle);
 					<li><a href="https://github.com/stylecow/stylecow-plugin-source-comment">source-comment</a></li>
 				</ul>
 
-				<h3>Vendor prefixes, polyfills, browser bugs fixers:</h3>
+				<h3>Code fixing:</h3>
 
 				<ul>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-animation">animation</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-appearance">appearance</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-background">background</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-border">border</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-box-shadow">box-shadow</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-box-sizing">box-sizing</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-calc">calc</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-clip">clip</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-column">column</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-cursor">cursor</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-document">document</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-fixes">fixes</a></li>
 					<li><a href="https://github.com/stylecow/stylecow-plugin-flex">flex</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-float">float</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-fullscreen">fullscreen</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-grid">grid</a></li>
 					<li><a href="https://github.com/stylecow/stylecow-plugin-initial">initial</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-inline-block">inline-block</a></li>
 					<li><a href="https://github.com/stylecow/stylecow-plugin-linear-gradient">linear-gradient</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-mask">mask</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-min-height">min-height</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-object">object</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-opacity">opacity</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-pseudoelements">pseudoelements</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-transform">transform</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-transition">transition</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-type">type</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-region">region</a></li>
+					<li><a href="https://github.com/stylecow/stylecow-plugin-prefixes">prefixes</a></li>
 					<li><a href="https://github.com/stylecow/stylecow-plugin-rem">rem</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-sizing">sizing</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-sticky">sticky</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-user-select">user-select</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-vmin">vmin</a></li>
 				</ul>
 
-				<h3>Emulation of some features in old explorers using ms-filters:</h3>
+				<h3>Emulation of some features in old Internet Explorer using ms-filters:</h3>
 
 				<ul>
 					<li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-background-alpha">msfilter-background-alpha</a></li>
@@ -183,54 +165,121 @@ var code = css.toCode(codeStyle);
 					</label>
 				</div>
 
-				<ul class="demo-plugins">
-					<li><label><input type="checkbox" checked value="animation"> animation</label></li>
-					<li><label><input type="checkbox" checked value="appearance"> appearance</label></li>
-					<li><label><input type="checkbox" checked value="background"> background</label></li>
-					<li><label><input type="checkbox" checked value="border"> border</label></li>
-					<li><label><input type="checkbox" checked value="box-shadow"> box-shadow</label></li>
-					<li><label><input type="checkbox" checked value="box-sizing"> box-sizing</label></li>
-					<li><label><input type="checkbox" checked value="calc"> calc</label></li>
-					<li><label><input type="checkbox" checked value="clip"> clip</label></li>
-					<li><label><input type="checkbox" checked value="color"> color</label></li>
-					<li><label><input type="checkbox" checked value="column"> column</label></li>
-					<li><label><input type="checkbox" checked value="cursor"> cursor</label></li>
-					<li><label><input type="checkbox" checked value="document"> document</label></li>
-					<li><label><input type="checkbox" checked value="flex"> flex</label></li>
-					<li><label><input type="checkbox" checked value="float"> float</label></li>
-					<li><label><input type="checkbox" checked value="fullscreen"> fullscreen</label></li>
-					<li><label><input type="checkbox" checked value="grid"> grid</label></li>
-					<li><label><input type="checkbox" checked value="initial"> initial</label></li>
-					<li><label><input type="checkbox" checked value="inline-block"> inline-block</label></li>
-					<li><label><input type="checkbox" checked value="linear-gradient"> linear-gradient</label></li>
-					<li><label><input type="checkbox" checked value="mask"> mask</label></li>
-					<li><label><input type="checkbox" checked value="matches"> matches</label></li>
-					<li><label><input type="checkbox" checked value="min-height"> min-height</label></li>
-					<li><label><input type="checkbox" checked value="nested-rules"> nested-rules</label></li>
-					<li><label><input type="checkbox" checked value="object"> object</label></li>
-					<li><label><input type="checkbox" checked value="opacity"> opacity</label></li>
-					<li><label><input type="checkbox" checked value="pseudoelements"> pseudoelements</label></li>
-					<li><label><input type="checkbox" checked value="region"> region</label></li>
-					<li><label><input type="checkbox" checked value="rem"> rem</label></li>
-					<li><label><input type="checkbox" checked value="sizing"> sizing</label></li>
-					<li><label><input type="checkbox" checked value="sticky"> sticky</label></li>
-					<li><label><input type="checkbox" checked value="transform"> transform</label></li>
-					<li><label><input type="checkbox" checked value="transition"> transition</label></li>
-					<li><label><input type="checkbox" checked value="type"> type</label></li>
-					<li><label><input type="checkbox" checked value="user-select"> user-select</label></li>
-					<li><label><input type="checkbox" checked value="variables"> variables</label></li>
-					<li><label><input type="checkbox" checked value="vmin"> vmin</label></li>
-				</ul>
+				<div class="demo-options">
+					<ul class="demo-plugins">
+						<li>
+							<strong>Plugins:</strong>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" checked value="color">
+								color
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" checked value="fixes">
+								fixes
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" checked value="flex">
+								flex
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" checked value="initial">
+								initial
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" checked value="linear-gradient">
+								linear-gradient
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" checked value="matches">
+								matches
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" checked value="nested-rules">
+								nested-rules
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" checked value="prefixes">
+								prefixes
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" checked value="rem">
+								rem
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" checked value="variables">
+								variables
+							</label>
+						</li>
+					</ul>
 
-				<ul class="demo-support">
-					<li><label for="support-ie">Internet Explorer</label> <input type="number" id="support-ie" name="explorer" min="0" value="8"></li>
-					<li><label for="support-ff">Mozilla Firefox</label> <input type="number" id="support-ff" name="firefox" min="0" value="30"></li>
-					<li><label for="support-gc">Google Chrome</label> <input type="number" id="support-gc" name="chrome" min="0" value="35"></li>
-					<li><label for="support-sf">Apple Safari</label> <input type="number" id="support-sf" name="safari" min="0" value="5"></li>
-					<li><label for="support-op">Opera</label> <input type="number" id="support-op" name="opera" min="0" value="22"></li>
-					<li><label for="support-an">Android</label> <input type="number" id="support-an" name="android" min="0" value="4"></li>
-					<li><label for="support-ios">iOS</label> <input type="number" id="support-ios" name="ios" min="0" value="6"></li>
-				</ul>
+					<ul class="demo-support">
+						<li>
+							<strong>Browser support:</strong>
+						</li>
+						<li>
+							<label>
+								<input type="number" id="support-ie" name="explorer" min="0" value="8">
+								Internet Explorer
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="number" id="support-ff" name="firefox" min="0" value="30">
+								Mozilla Firefox
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="number" id="support-gc" name="chrome" min="0" value="35">
+								Google Chrome
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="number" id="support-sf" name="safari" min="0" value="5">
+								Apple Safari
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="number" id="support-op" name="opera" min="0" value="22">
+								Opera
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="number" id="support-an" name="android" min="0" value="4">
+								Android
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="number" id="support-ios" name="ios" min="0" value="6">
+								iOS
+							</label>
+						</li>
+					</ul>
+				</div>
 			</form>
 
 			<footer class="page-footer">
@@ -247,7 +296,7 @@ var code = css.toCode(codeStyle);
 
 
 				//Stylecow code
-				var stylecow = require('./main.js');
+				var stylecow = require('./js/main');
 
 				var $input = $('#input-code');
 				var $output = $('#output-code');

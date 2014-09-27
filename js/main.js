@@ -1,9 +1,10 @@
 var stylecow = require('stylecow');
 
 module.exports = function (code, plugins, support) {
-	css = stylecow.create(code);
+	stylecow.setConfig({
+		support: support,
+		plugins: plugins,
+	});
 
-	css.convert(plugins, support);
-				
-	return css.toString();
+	return stylecow.convert(code).toString();
 }
