@@ -19,8 +19,10 @@
 
 			<nav class="page-navigation">
 				<ul class="nav">
-					<li><a href="#welcome">Welcome</a></li>
+					<li><a href="#welcome">Hi!</a></li>
 					<li><a href="#quick-start">Quick start</a></li>
+					<li><a href="#cli">Cli</a></li>
+					<li><a href="#grunt">Grunt</a></li>
 					<li><a href="#plugins">Plugins</a></li>
 					<li><a href="#demo">Demo</a></li>
 					<li><a href="https://github.com/stylecow/stylecow">Get the code</a></li>
@@ -30,25 +32,65 @@
 			<div class="page-content">
 				<h2 id="welcome">Why another CSS preprocessor?</h2>
 
-				<p>The main purpose of <strong>stylecow</strong> is to bring more CSS support to all browsers. Stylecow converts your code to be more compatible with all browsers adding vendor prefixes, fixing bugs, generating polyfills, to emulate some non-supporting css properties, etc.</p>
+				<p>The main purpose of stylecow is to bring more CSS support to all browsers. Stylecow converts your code to be more compatible with all browsers adding vendor prefixes, fixing issues, generating polyfills, etc.</p>
 
-				<p>You can also play with new (or future) css features such variables, nested rules or color manipulation using the w3c syntax. If you need more power, you can use other  tools like SASS or LESS and use stylecow only to fix your code for more compatibility.</p>
+				<p>You can play also with latests (or futures) css features such variables, nested rules or color manipulation using the w3c syntax. This mean you don't have to learn another language such LESS or SASS to use variables or color manipulation, you write css and you get css, and if you stop using stylecow, your css code remains css code.</p>
 
 				<h2 id="quick-start">Quick start</h2>
 
 				<p>Use npm to install the library:</p>
 
-				<pre><code>npm install stylecow</code></pre>
+				<pre><code>npm install stylecow --save</code></pre>
 
-				<p>You have to install also some plugins. For example, to play with colors and variables</p>
+				<p>Stylecow by itself is not very useful, you have to install any plugin, for example color and variables:</p>
 
-				<pre><code>npm install stylecow-plugin-color stylecow-plugin-variables</code></pre>
+				<pre><code>npm install stylecow-plugin-color stylecow-plugin-variables --save</code></pre>
 
-				<p>Now you need to create a config file where to save the minimal browser supported, code style, plugins used, etc. To create it in an interactive way:</p>
+				<p>Ok, let's create the js file:</p>
+
+				<pre><code>var stylecow = require('stylecow');
+
+stylecow.setConfig({
+
+	//Minimal browser supported
+	support: {
+		explorer: 8,
+		firefox: 30,
+		chrome: 35,
+		safari: 5,
+		opera: 22,
+		android: 4,
+		ios: 6
+	},
+
+	//Plugins to execute (without "stylecow-plugin-")
+	plugins: [
+		"color",
+		"variables"
+	],
+
+	//Code style used (normal or minify)
+	code: "minify"
+});
+
+//Load and convert a css file
+css = stylecow.convertFromFile("styles.css");
+
+//Get the minified code
+var code = css.toCode();
+</code></pre>
+		
+				<h2 id="cli">Command line interface</h2>
+
+				<p>To execute stylecow in the command line interface, you need install the <a href="https://github.com/stylecow/stylecow-cli">stylecow-cli module</a>. Use <code>-g</code> to install as global:</p>
+
+				<pre><code>npm install stylecow-cli -g</code></pre>
+
+				<p>Now you have the <code>stylecow</code> command. The next thing is a json file to store the configuration. To create it in an interactive way:</p>
 
 				<pre><code>stylecow init</code></pre>
 
-				<p>An example of config file:</p>
+				<p>An typical config file looks like:</p>
 
 				<pre><code>{
 	"input": "styles.css",
@@ -79,38 +121,55 @@
 
 				<p>Use <code>stylecow execute -h</code> to view all available options.</p>
 
-				<h3>Programatic usage</h3>
+				
 
-				<p>Here's an example of using stylecow in node:</p>
+				<h2 id="grunt">Using with Grunt</h2>
 
-				<pre><code>var stylecow = require('stylecow');
+				<p>If you use Grunt as your task runner there is <a href="https://github.com/stylecow/grunt-stylecow">a plugin</a> available that you can install with npm:</p>
 
-stylecow.setConfig({
-	support: {
-		explorer: 8,
-		firefox: 30,
-		chrome: 35,
-		safari: 5,
-		opera: 22,
-		android: 4,
-		ios: 6
-	},
-	plugins: [
-		"color",
-		"variables"
-	],
-	code: "minify"
-});
+				<pre><code>npm install grunt-stylecow --save-dev</code></pre>
 
+				<p>Now, you can register and configurate it in the Grunt file:</p>
 
-css = stylecow.convertFromFile("styles.css");
+				<pre><code>module.exports = function(grunt) {
+	grunt.initConfig({
+	    stylecow: {
+	        options: {
+	            "support": {
+	                "explorer": 10,
+	                "firefox": 30,
+	                "chrome": 35,
+	                "safari": 6,
+	                "opera": 22,
+	                "android": 4,
+	                "ios": 6
+	            },
+	            "plugins": [
+	                "color",
+	                "variables"
+	            ],
+	            "code": "normal"
+	        },
+	        dist: {
+	            files: {
+	                'css/styles.min.css': ['./css/styles.css']
+	            }
+	        }
+	    }
+	});
 
-var code = css.toCode();
+	grunt.loadNpmTasks('grunt-stylecow');
+
+	grunt.registerTask('default', ['stylecow']);
+}
 </code></pre>
+
+
+
 
 				<h2 id="plugins">Plugins</h2>
 
-				<p>All css transformations are done via plugins. There are several plugins available, for example, to play with variables using the <a href="http://www.w3.org/TR/css-variables/">CSS Variables Module 1 syntax</a>, to manipulate the colors using the <a href="http://dev.w3.org/csswg/css-color/">CSS Colors Module Level 4</a>, to work with <a href="http://www.w3.org/TR/css3-flexbox/">Flexible Box Layout Module Level 1</a> generating the old syntax for ie10 and webkit browsers, etc...</p>
+				<p>All stylecow operations are done via plugins. There are several plugins available, for example, to play with variables using the <a href="http://www.w3.org/TR/css-variables/">w3c syntax</a>, to manipulate the colors using the <a href="http://dev.w3.org/csswg/css-color/">CSS Colors Module Level 4 syntax</a>, to play with the latest syntax of <a href="http://www.w3.org/TR/css3-flexbox/">flexbox</a> generating the old syntax for ie10 and webkit browsers, etc...</p>
 
 				<p>The available plugins are the following:</p>
 
