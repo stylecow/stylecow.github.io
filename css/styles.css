@@ -60,6 +60,13 @@ code {
 	height: 80vh;
 	color: white;
 	font-family: var(--font-sans);
+	text-align: center;
+	padding: 0 10px;
+
+	img {
+		max-width: 100%;
+		height: auto;
+	}
 
 	p {
 		font-size: 2rem;
@@ -94,6 +101,7 @@ code {
 			border-bottom: solid 4px white;
 			border-top: solid 4px white;
 			display: block;
+			white-space: nowrap;
 
 			&:hover {
 				border-bottom-color: color(var(--color) tint(50));
@@ -105,6 +113,43 @@ code {
 		}
 	}
 }
+
+@media (max-width: 670px) {
+	.page-navigation {
+		ul {
+			flex-wrap: wrap;
+
+			li {
+				flex-grow: 1;
+				flex-shrink: 0;
+				min-width: 150px;
+				text-align: center;
+			}
+		}
+	}
+}
+
+@media (max-width: 610px) {
+	.page-navigation {
+		ul {
+			li {
+				min-width: 100px;
+			}
+		}
+	}
+}
+
+@media (max-width: 500px) {
+	.page-navigation {
+		ul {
+			li {
+				min-width: 0px;
+			}
+		}
+	}
+}
+
+
 
 .page-content {
 	max-width: 35em;

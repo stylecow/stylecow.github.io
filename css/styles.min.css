@@ -410,6 +410,12 @@ code {
 	height: 80vh;
 	color: white;
 	font-family: 'Open Sans',Helvetica,sans-serif;
+	text-align: center;
+	padding: 0 10px;
+}
+.page-header img {
+	max-width: 100%;
+	height: auto;
 }
 .page-header p {
 	font-size: 2rem;
@@ -443,12 +449,34 @@ code {
 	border-bottom: solid 4px white;
 	border-top: solid 4px white;
 	display: block;
+	white-space: nowrap;
 }
 .page-navigation ul a:hover {
 	border-bottom-color: #A8A8B3;
 }
 .page-navigation ul li.active a {
 	border-bottom-color: #505166;
+}
+@media (max-width: 670px) {
+	.page-navigation ul {
+		flex-wrap: wrap;
+	}
+	.page-navigation ul li {
+		flex-grow: 1;
+		flex-shrink: 0;
+		min-width: 150px;
+		text-align: center;
+	}
+}
+@media (max-width: 610px) {
+	.page-navigation ul li {
+		min-width: 100px;
+	}
+}
+@media (max-width: 500px) {
+	.page-navigation ul li {
+		min-width: 0px;
+	}
 }
 .page-content {
 	max-width: 35em;

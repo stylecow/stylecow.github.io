@@ -5,6 +5,7 @@
     "grunt-browserify": "*",
     "grunt-contrib-uglify": "*",
     "grunt-contrib-concat": "*",
+    "grunt-contrib-watch": "*",
     "grunt-stylecow": "*",
     "stylecow": "*",
     "stylecow-plugin-color": "*",

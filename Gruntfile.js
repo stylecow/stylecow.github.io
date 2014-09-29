@@ -65,12 +65,19 @@ module.exports = function(grunt) {
 					'css/styles.min.css': ['./css/styles.css']
 				}
 			}
+		},
+		watch: {
+			scripts: {
+				files: 'css/styles.css',
+				tasks: ['stylecow']
+			}
 		}
 	});
 
 	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-stylecow');
 
 	grunt.registerTask('default', ['browserify', 'concat', 'uglify', 'stylecow']);
