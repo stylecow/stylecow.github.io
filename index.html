@@ -38,17 +38,23 @@
 
 				<h2 id="quick-start">Quick start</h2>
 
-				<p>Use npm to install the library:</p>
+				<p>Use npm to install the library and the plugins to use. The best way is creating a <code>package.json</code> file with the modules name:</p>
+<pre><code>{
+  "dependencies": {
+    "stylecow": "*",
+    "stylecow-plugin-color": "*",
+    "stylecow-plugin-variables": "*"
+  }
+}
+</code></pre>
 
-				<pre><code>npm install stylecow --save</code></pre>
+				<p>And then use npm to install:</p>
 
-				<p>Stylecow by itself is not very useful, you have to install any plugin, for example color and variables:</p>
+				<pre><code>npm install</code></pre>
 
-				<pre><code>npm install stylecow-plugin-color stylecow-plugin-variables --save</code></pre>
+				<p>Now you have to create the javascript file to execute it:</p>
 
-				<p>Ok, let's create the js file:</p>
-
-				<pre><code>var stylecow = require('stylecow');
+<pre><code>var stylecow = require('stylecow');
 
 stylecow.setConfig({
 
@@ -82,11 +88,11 @@ var code = css.toCode();
 		
 				<h2 id="cli">Command line interface</h2>
 
-				<p>To execute stylecow in the command line interface, you need install the <a href="https://github.com/stylecow/stylecow-cli">stylecow-cli module</a>. Use <code>-g</code> to install as global:</p>
+				<p>A better way to execute stylecow is using the command line interface. To do that, you need to install the <a href="https://github.com/stylecow/stylecow-cli">stylecow-cli module</a>. Use <code>-g</code> for global installation:</p>
 
 				<pre><code>npm install stylecow-cli -g</code></pre>
 
-				<p>Now you have the <code>stylecow</code> command. The next thing is a json file to store the configuration. To create it in an interactive way:</p>
+				<p>Now there is the <code>stylecow</code> command available with some useful utilities. As you need a json file with the configuration, you can  create it in an interactive way:</p>
 
 				<pre><code>stylecow init</code></pre>
 
@@ -111,13 +117,18 @@ var code = css.toCode();
 	"code": "minify"
 }
 </code></pre>
-				<p>The input and output properties are optional you can define it later using <code>--input</code> and <code>--output</code> options</p>
+				<p>The input and output properties are optional you can define them later using <code>--input</code> and <code>--output</code> options</p>
 
 				<p>To execute the config file:</p>
 
-				<pre><code>stylecow execute stylecow_config.json</code></pre>
+				<pre><code>stylecow execute stylecow.json</code></pre>
 
-				<p>You can use the option <code>--watch</code> to keep stylecow watching the css files and regenerate the output code when any input file changes.</p>
+				<p>The option <code>--watch</code> keeps stylecow watching the css files to regenerate the output code when changes are detected.</p>
+
+				<p>If you want your browser reloads the css automatically, use the option <code>--socket</code> to create a websocket server that comunicates with your browser and reloads the css when changes are detected (you don't need use <code>--watch</code> with <code>--socket</code> because it's done automatically). When a websocket is created, some javascript code is needed to place in the html, but you can create a bookmarklet to get always available, like this:<br>
+
+				<a href="javascript:(function(){var ws;function socket(){ws=new WebSocket('ws://127.0.0.1:8080');ws.onmessage=function(e){Array.prototype.forEach.call(document.querySelectorAll('link[rel=\"stylesheet\"]'),function(link){link.href=link.href.replace(/\?.*/,'')+'?t='+(new Date).getTime();});};}setInterval(function(){if(ws){if(ws.readyState!==1){socket();}}else{socket();}},1000);})();">stylecow live reload</a>
+				</p>
 
 				<p>Use <code>stylecow execute -h</code> to view all available options.</p>
 
@@ -125,7 +136,7 @@ var code = css.toCode();
 
 				<h2 id="grunt">Using with Grunt</h2>
 
-				<p>If you use Grunt as your task runner there is <a href="https://github.com/stylecow/grunt-stylecow">a plugin</a> available that you can install with npm:</p>
+				<p>Are you one of these guys? No problem, there is <a href="https://github.com/stylecow/grunt-stylecow">a grunt plugin</a> available that you can install with npm:</p>
 
 				<pre><code>npm install grunt-stylecow --save-dev</code></pre>
 
@@ -150,6 +161,26 @@ var code = css.toCode();
 	            ],
 	            "code": "normal"
 	        },
+	        dist: {
+	            files: {
+	                'css/styles.min.css': ['./css/styles.css']
+	            }
+	        }
+	    }
+	});
+
+	grunt.loadNpmTasks('grunt-stylecow');
+
+	grunt.registerTask('default', ['stylecow']);
+}
+</code></pre>
+
+				<p>Or if there is a config file that you want to reuse:</p>
+
+<pre><code>module.exports = function(grunt) {
+	grunt.initConfig({
+	    stylecow: {
+	        options: require('./stylecow.json'),
 	        dist: {
 	            files: {
 	                'css/styles.min.css': ['./css/styles.css']
