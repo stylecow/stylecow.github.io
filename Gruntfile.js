@@ -35,41 +35,11 @@ module.exports = function(grunt) {
 			}
 		},
 		stylecow: {
-			options: {
-				"support": {
-					"explorer": 10,
-					"firefox": 30,
-					"chrome": 35,
-					"safari": 6,
-					"opera": 22,
-					"android": 4,
-					"ios": 6
-				},
-				"plugins": [
-					"color",
-					"fixes",
-					"flex",
-					"import",
-					"initial",
-					"linear-gradient",
-					"matches",
-					"nested-rules",
-					"prefixes",
-					"rem",
-					"variables"
-				],
-				"code": "normal"
-			},
+			options: require('./stylecow.json'),
 			dist: {
 				files: {
 					'css/styles.min.css': ['./css/styles.css']
 				}
-			}
-		},
-		watch: {
-			scripts: {
-				files: 'css/styles.css',
-				tasks: ['stylecow']
 			}
 		}
 	});
@@ -77,7 +47,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-stylecow');
 
 	grunt.registerTask('default', ['browserify', 'concat', 'uglify', 'stylecow']);

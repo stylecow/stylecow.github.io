@@ -1,44 +1,45 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
+    <head>
+        <meta charset="utf-8">
 
-		<title>stylecow</title>
+        <title>stylecow</title>
 
-		<link rel="stylesheet" type="text/css" href="css/styles.min.css">
-	</head>
+        <link rel="stylesheet" type="text/css" href="css/styles.min.css">
+    </head>
 
-	<body>
-		<main>
-			<header class="page-header">
-				<h1 class="visually-hidden">stylecow</h1>
-				<img src="css/stylecow.svg">
-				<p>Modern CSS to all browsers</p>
-				<small>*made with churrasco</small>
-			</header>
+    <body>
+        <main>
+            <header class="page-header">
+                <h1 class="visually-hidden">stylecow</h1>
+                <img src="css/stylecow.svg">
+                <p>Modern CSS to all browsers</p>
+                <small>*made with churrasco</small>
+                <a href="https://github.com/stylecow/stylecow" class="image forkme">Fork me on Github</a>
+            </header>
 
-			<nav class="page-navigation">
-				<ul class="nav">
-					<li><a href="#welcome">Hi!</a></li>
-					<li><a href="#quick-start">Quick start</a></li>
-					<li><a href="#cli">Cli</a></li>
-					<li><a href="#grunt">Grunt</a></li>
-					<li><a href="#plugins">Plugins</a></li>
-					<li><a href="#demo">Demo</a></li>
-					<li><a href="https://github.com/stylecow/stylecow">Get the code</a></li>
-				</ul>
-			</nav>
+            <nav class="page-navigation">
+                <ul class="nav">
+                    <li><a href="#welcome">Hi!</a></li>
+                    <li><a href="#quick-start">Quick start</a></li>
+                    <li><a href="#cli">Cli</a></li>
+                    <li><a href="#grunt">Grunt</a></li>
+                    <li><a href="#plugins">Plugins</a></li>
+                    <li><a href="#tasks">Customize</a></li>
+                    <li><a href="#demo">Demo</a></li>
+                </ul>
+            </nav>
 
-			<div class="page-content">
-				<h2 id="welcome">Why another CSS preprocessor?</h2>
+            <div class="page-content">
+                <h2 id="welcome">Why another CSS preprocessor?</h2>
 
-				<p>The main purpose of stylecow is to bring more CSS support to all browsers. Stylecow converts your code to be more compatible with all browsers adding vendor prefixes, fixing issues, generating polyfills, etc.</p>
+                <p>The main purpose of stylecow is to bring more CSS support to all browsers. Stylecow converts your code to be more compatible with all browsers adding vendor prefixes, fixing issues, generating polyfills, etc.</p>
 
-				<p>You can play also with latests (or futures) css features such variables, nested rules or color manipulation using the w3c syntax. This mean you don't have to learn another language such LESS or SASS to use variables or color manipulation, you write css and you get css, and if you stop using stylecow, your css code remains css code.</p>
+                <p>You can play also with latests (or futures) css features such variables, nested rules or color manipulation using the w3c syntax. This mean you don't have to learn another language such LESS or SASS to use variables or color manipulation, you write css and you get css, and if you stop using stylecow, your css code remains css code.</p>
 
-				<h2 id="quick-start">Quick start</h2>
+                <h2 id="quick-start">Quick start</h2>
 
-				<p>Use npm to install the library and the plugins to use. The best way is creating a <code>package.json</code> file with the modules name:</p>
+                <p>Use npm to install the library and the plugins to use. The best way is creating a <code>package.json</code> file with the modules name:</p>
 <pre><code>{
   "dependencies": {
     "stylecow": "*",
@@ -48,35 +49,35 @@
 }
 </code></pre>
 
-				<p>And then use npm to install:</p>
+                <p>And then use npm to install:</p>
 
-				<pre><code>npm install</code></pre>
+                <pre><code>npm install</code></pre>
 
-				<p>Now you have to create the javascript file to execute it:</p>
+                <p>Now you have to create the javascript file to execute it:</p>
 
 <pre><code>var stylecow = require('stylecow');
 
 stylecow.setConfig({
 
-	//Minimal browser supported
-	support: {
-		explorer: 8,
-		firefox: 30,
-		chrome: 35,
-		safari: 5,
-		opera: 22,
-		android: 4,
-		ios: 6
-	},
+    //Minimal browser supported
+    support: {
+        explorer: 8,
+        firefox: 30,
+        chrome: 35,
+        safari: 5,
+        opera: 22,
+        android: 4,
+        ios: 6
+    },
 
-	//Plugins to execute (without "stylecow-plugin-")
-	plugins: [
-		"color",
-		"variables"
-	],
+    //Plugins to execute (without "stylecow-plugin-")
+    plugins: [
+        "color",
+        "variables"
+    ],
 
-	//Code style used (normal or minify)
-	code: "minify"
+    //Code style used (normal or minify)
+    code: "minify"
 });
 
 //Load and convert a css file
@@ -85,337 +86,429 @@ css = stylecow.convertFromFile("styles.css");
 //Get the minified code
 var code = css.toCode();
 </code></pre>
-		
-				<h2 id="cli">Command line interface</h2>
+        
+                <h2 id="cli">Command line interface</h2>
 
-				<p>A better way to execute stylecow is using the command line interface. To do that, you need to install the <a href="https://github.com/stylecow/stylecow-cli">stylecow-cli module</a>. Use <code>-g</code> for global installation:</p>
+                <p>A better way to execute stylecow is using the command line interface. To do that, you need to install the <a href="https://github.com/stylecow/stylecow-cli">stylecow-cli module</a>. Use <code>-g</code> for global installation:</p>
 
-				<pre><code>npm install stylecow-cli -g</code></pre>
+                <pre><code>npm install stylecow-cli -g</code></pre>
 
-				<p>Now there is the <code>stylecow</code> command available with some useful utilities. As you need a json file with the configuration, you can  create it in an interactive way:</p>
+                <p>Now there is the <code>stylecow</code> command available with some useful utilities. As you need a json file with the configuration, you can  create it in an interactive way:</p>
 
-				<pre><code>stylecow init</code></pre>
+                <pre><code>stylecow init</code></pre>
 
-				<p>A typical config file looks like:</p>
+                <p>A typical config file looks like:</p>
 
-				<pre><code>{
-	"input": "styles.css",
-	"output": "styles.min.css",
-	"support": {
-		"explorer": 8,
-		"firefox": 30,
-		"chrome": 35,
-		"safari": 5,
-		"opera": 22,
-		"android": 4,
-		"ios": 6
-	},
-	"plugins": [
-		"color",
-		"variables"
-	],
-	"code": "minify"
+                <pre><code>{
+    "input": "styles.css",
+    "output": "styles.min.css",
+    "support": {
+        "explorer": 8,
+        "firefox": 30,
+        "chrome": 35,
+        "safari": 5,
+        "opera": 22,
+        "android": 4,
+        "ios": 6
+    },
+    "plugins": [
+        "color",
+        "variables"
+    ],
+    "code": "minify"
 }
 </code></pre>
-				<p>The input and output properties are optional you can define them later using <code>--input</code> and <code>--output</code> options</p>
+                <p>The input and output properties are optional you can define them later using <code>--input</code> and <code>--output</code> options</p>
 
-				<p>To execute the config file:</p>
+                <p>To execute the config file:</p>
 
-				<pre><code>stylecow execute stylecow.json</code></pre>
+                <pre><code>stylecow execute stylecow.json</code></pre>
 
-				<p>You can use simply <code>stylecow execute</code> if your config file is "stylecow.json" (the default name).</p>
+                <p>You can use simply <code>stylecow execute</code> if your config file is "stylecow.json" (the default name).</p>
 
-				<p>The option <code>--watch</code> keeps stylecow watching the css files to regenerate the output code when changes are detected.</p>
+                <p>The option <code>--watch</code> keeps stylecow watching the css files to regenerate the output code when changes are detected.</p>
 
-				<p>If you want your browser reloads the css automatically, use the option <code>--socket</code> to create a websocket server that comunicates with your browser and reloads the css when changes are detected (you don't need use <code>--watch</code> with <code>--socket</code> because it's done automatically). When a websocket is created, some javascript code is needed to place in the html, but you can create a bookmarklet to get always available, like this:<br>
+                <p>If you want your browser reloads the css automatically, use the option <code>--socket</code> to create a websocket server that comunicates with your browser and reloads the css when changes are detected (you don't need use <code>--watch</code> with <code>--socket</code> because it's done automatically). When a websocket is created, some javascript code is needed to place in the html, but you can create a bookmarklet to get always available, like this:<br>
 
-				<a href="javascript:(function(){var ws;function socket(){ws=new WebSocket('ws://127.0.0.1:8080');ws.onmessage=function(e){Array.prototype.forEach.call(document.querySelectorAll('link[rel=\"stylesheet\"]'),function(link){link.href=link.href.replace(/\?.*/,'')+'?t='+(new Date).getTime();});};}setInterval(function(){if(ws){if(ws.readyState!==1){socket();}}else{socket();}},1000);})();">stylecow live reload</a>
-				</p>
+                <a href="javascript:(function(){var ws;function socket(){ws=new WebSocket('ws://127.0.0.1:8080');ws.onmessage=function(e){Array.prototype.forEach.call(document.querySelectorAll('link[rel=\"stylesheet\"]'),function(link){link.href=link.href.replace(/\?.*/,'')+'?t='+(new Date).getTime();});};}setInterval(function(){if(ws){if(ws.readyState!==1){socket();}}else{socket();}},1000);})();">stylecow live reload</a>
+                </p>
 
-				<p>Use <code>stylecow execute -h</code> to view all available options.</p>
+                <p>Use <code>stylecow execute -h</code> to view all available options.</p>
 
-				
+                
 
-				<h2 id="grunt">Using with Grunt</h2>
+                <h2 id="grunt">Using with Grunt</h2>
 
-				<p>Are you one of these guys? No problem, there is <a href="https://github.com/stylecow/grunt-stylecow">a grunt plugin</a> available that you can install with npm:</p>
+                <p>Are you one of these guys? No problem, there is <a href="https://github.com/stylecow/grunt-stylecow">a grunt plugin</a> available that you can install with npm:</p>
 
-				<pre><code>npm install grunt-stylecow --save-dev</code></pre>
+                <pre><code>npm install grunt-stylecow --save-dev</code></pre>
 
-				<p>Now, you can register and configurate it in the Grunt file:</p>
+                <p>Now, you can register and configurate it in the Grunt file:</p>
 
-				<pre><code>module.exports = function(grunt) {
-	grunt.initConfig({
-	    stylecow: {
-	        options: {
-	            "support": {
-	                "explorer": 10,
-	                "firefox": 30,
-	                "chrome": 35,
-	                "safari": 6,
-	                "opera": 22,
-	                "android": 4,
-	                "ios": 6
-	            },
-	            "plugins": [
-	                "color",
-	                "variables"
-	            ],
-	            "code": "normal"
-	        },
-	        dist: {
-	            files: {
-	                'css/styles.min.css': ['./css/styles.css']
-	            }
-	        }
-	    }
-	});
+                <pre><code>module.exports = function(grunt) {
+    grunt.initConfig({
+        stylecow: {
+            options: {
+                "support": {
+                    "explorer": 10,
+                    "firefox": 30,
+                    "chrome": 35,
+                    "safari": 6,
+                    "opera": 22,
+                    "android": 4,
+                    "ios": 6
+                },
+                "plugins": [
+                    "color",
+                    "variables"
+                ],
+                "code": "normal"
+            },
+            dist: {
+                files: {
+                    'css/styles.min.css': ['./css/styles.css']
+                }
+            }
+        }
+    });
 
-	grunt.loadNpmTasks('grunt-stylecow');
+    grunt.loadNpmTasks('grunt-stylecow');
 
-	grunt.registerTask('default', ['stylecow']);
+    grunt.registerTask('default', ['stylecow']);
 }
 </code></pre>
 
-				<p>Or if there is a config file that you want to reuse:</p>
+                <p>Or if there is a config file that you want to reuse:</p>
 
 <pre><code>module.exports = function(grunt) {
-	grunt.initConfig({
-	    stylecow: {
-	        options: require('./stylecow.json'),
-	        dist: {
-	            files: {
-	                'css/styles.min.css': ['./css/styles.css']
-	            }
-	        }
-	    }
-	});
+    grunt.initConfig({
+        stylecow: {
+            options: require('./stylecow.json'),
+            dist: {
+                files: {
+                    'css/styles.min.css': ['./css/styles.css']
+                }
+            }
+        }
+    });
 
-	grunt.loadNpmTasks('grunt-stylecow');
+    grunt.loadNpmTasks('grunt-stylecow');
 
-	grunt.registerTask('default', ['stylecow']);
+    grunt.registerTask('default', ['stylecow']);
 }
 </code></pre>
 
 
 
 
-				<h2 id="plugins">Plugins</h2>
+                <h2 id="plugins">Plugins</h2>
 
-				<p>All stylecow operations are done via plugins. There are several plugins available, for example, to play with variables using the <a href="http://www.w3.org/TR/css-variables/">w3c syntax</a>, to manipulate the colors using the <a href="http://dev.w3.org/csswg/css-color/">CSS Colors Module Level 4 syntax</a>, to play with the latest syntax of <a href="http://www.w3.org/TR/css3-flexbox/">flexbox</a> generating the old syntax for ie10 and webkit browsers, etc...</p>
+                <p>All stylecow operations are done via plugins. There are several plugins available, for example, to play with variables using the <a href="http://www.w3.org/TR/css-variables/">w3c syntax</a>, to manipulate the colors using the <a href="http://dev.w3.org/csswg/css-color/">CSS Colors Module Level 4 syntax</a>, to play with the latest syntax of <a href="http://www.w3.org/TR/css3-flexbox/">flexbox</a> generating the old syntax for ie10 and webkit browsers, etc...</p>
 
-				<p>The available plugins are the following:</p>
+                <p>The available plugins are the following:</p>
 
-				<h3>Support for CSS incoming features:</h3>
+                <h3>Support for CSS incoming features:</h3>
 
-				<ul>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-color">color</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-matches">matches</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-nested-rules">nested-rules</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-variables">variables</a></li>
-				</ul>
+                <ul>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-color">color</a></li>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-matches">matches</a></li>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-nested-rules">nested-rules</a></li>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-variables">variables</a></li>
+                </ul>
 
-				<h3>Utilities:</h3>
+                <h3>Utilities:</h3>
 
-				<ul>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-import">import</a> (To insert the code of the <code>@import</code> rules with relative urls)</li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-source-comment">source-comment</a></li>
-				</ul>
+                <ul>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-import">import</a> (To insert the code of the <code>@import</code> rules with relative urls)</li>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-source-comment">source-comment</a></li>
+                </ul>
 
-				<h3>Code fixing:</h3>
+                <h3>Code fixing:</h3>
 
-				<ul>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-fixes">fixes</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-flex">flex</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-initial">initial</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-linear-gradient">linear-gradient</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-prefixes">prefixes</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-rem">rem</a></li>
-				</ul>
+                <ul>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-fixes">fixes</a></li>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-flex">flex</a></li>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-initial">initial</a></li>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-linear-gradient">linear-gradient</a></li>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-prefixes">prefixes</a></li>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-rem">rem</a></li>
+                </ul>
 
-				<h3>Emulation of some features in old Internet Explorer using ms-filters:</h3>
+                <h3>Emulation of some features in old Internet Explorer using ms-filters:</h3>
 
-				<ul>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-background-alpha">msfilter-background-alpha</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-linear-gradient">msfilter-linear-gradient</a></li>
-					<li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-transform">msfilter-transform</a></li>
-				</ul>
+                <ul>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-background-alpha">msfilter-background-alpha</a></li>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-linear-gradient">msfilter-linear-gradient</a></li>
+                    <li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-transform">msfilter-transform</a></li>
+                </ul>
 
-				<h2 id="demo">Try the demo!</h2>
-			</div>
+                <h2 id="tasks">Custom tasks</h2>
 
-			<form class="demo">
-				<div class="demo-code">
-					<label>
-						Input:
-						<textarea id="input-code" placeholder="Paste here your css code"></textarea>
-					</label>
-					<button type="submit">Convert &rarr;</button>
-					<label>
-						Output:
-						<textarea id="output-code"></textarea>
-					</label>
-				</div>
+                <p>In addition to the plugins, you can create your own custom tasks to convert the css code as you want. A task is a function or functions executed for each css element found in the code (a rule, a declaration, etc). Let's see an example:</p>
 
-				<div class="demo-options">
-					<ul class="demo-plugins">
-						<li>
-							<strong>Plugins:</strong>
-						</li>
-						<li>
-							<label>
-								<input type="checkbox" checked value="color">
-								color
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="checkbox" checked value="fixes">
-								fixes
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="checkbox" checked value="flex">
-								flex
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="checkbox" checked value="initial">
-								initial
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="checkbox" checked value="linear-gradient">
-								linear-gradient
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="checkbox" checked value="matches">
-								matches
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="checkbox" checked value="nested-rules">
-								nested-rules
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="checkbox" checked value="prefixes">
-								prefixes
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="checkbox" checked value="rem">
-								rem
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="checkbox" checked value="variables">
-								variables
-							</label>
-						</li>
-					</ul>
+<pre><code>stylecow.addTask({
+    Declaration: {
+        colour: function (declaration) {
+            declaration.name = "color";
+        }
+    }
+});
+</code></pre>
 
-					<ul class="demo-support">
-						<li>
-							<strong>Browser support:</strong>
-						</li>
-						<li>
-							<label>
-								<input type="number" id="support-ie" name="explorer" min="0" value="8">
-								Internet Explorer
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="number" id="support-ff" name="firefox" min="0" value="30">
-								Mozilla Firefox
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="number" id="support-gc" name="chrome" min="0" value="35">
-								Google Chrome
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="number" id="support-sf" name="safari" min="0" value="5">
-								Apple Safari
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="number" id="support-op" name="opera" min="0" value="22">
-								Opera
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="number" id="support-an" name="android" min="0" value="4">
-								Android
-							</label>
-						</li>
-						<li>
-							<label>
-								<input type="number" id="support-ios" name="ios" min="0" value="6">
-								iOS
-							</label>
-						</li>
-					</ul>
-				</div>
-			</form>
+                <p>In this task, we defined a function that will be executed for each object of type "Declaration" named "colour" and changes the name to "color". If we execute this task with the following code:</p>
 
-			<footer class="page-footer">
-				<p>Project maintained by <a href="https://github.com/oscarotero">oscarotero</a> | <a href="https://github.com/stylecow/stylecow/blob/master/LICENSE">MIT license</a></p>
-			</footer>
-		</main>
+<pre><code>.foo {
+    colour: red;
+}
+</code></pre>
 
-		<script type="text/javascript" src="js/all.min.js"></script>
-		<script type="text/javascript">
-			$(document).ready(function () {
-				$('body').scrollspy({target: '.page-navigation'});
+                <p>The result is:</p>
 
+<pre><code>.foo {
+    color: red;
+}
+</code></pre>
 
-				//Stylecow code
-				var stylecow = require('./js/main');
+                <p>You can see the code of the available plugins (they are really tasks) to know how to create your own plugins.</p>
+                
+                <p>Note that the tasks are executed from the deeper object to up. For example, if a task has a callback executed in the function "linear-gradient()" and other executed in the declaration "background-image", the "linear-gradient" callback will be executed before "background-image". If you need to execute the declaration callback before, it has to be inside "BeforeDeclaration" instead "Declaration".</p>
 
-				var $input = $('#input-code');
-				var $output = $('#output-code');
-				var $plugins = $('.demo-plugins input');
-				var $support = $('.demo-support input');
+                <p>There is a special property called "disable", to disable the execution of this task when the minimal browser support is equal or upper than the specified. Examples:</p>
 
-				$('.demo').submit(function (e) {
-					e.preventDefault();
+<pre><code>stylecow.addTask({
 
-					var plugins = [];
-					var support = {};
+    //Disable this task whether the firefox version is 20 or more
+    disable: {
+        firefox: 20.0
+    },
 
-					$plugins.each(function () {
-						var $input = $(this);
+    Declaration: {
 
-						if ($input.is(':checked')) {
-							plugins.push($input.val());
-						}
-					});
+        //Callbak executed in declarations named "colour"
+        colour: function (declaration) {
+            //Your code
+        },
 
-					$support.each(function () {
-						var $input = $(this);
+        //Callback executed in all declarations
+        "*": function (declaration) {
+            //Your code
+        }
+    },
 
-						support[$input.attr('name')] = $input.val();
-					});
+    //Callback executed in all rules
+    Rule: function (rule) {
+        //Your code
+    },
 
-					$output.val(stylecow($input.val(), plugins, support));
-				});
-			});
-		</script>
-	</body>
+    //Callback executed in all rules
+    //before execute the children callbacks
+    BeforeRule: function (rule) {
+        //Your code
+    }
+});
+</code></pre>
+
+                <p>The available type objects can increase, but for now are:</p>
+
+                <ul>
+                    <li>AtRule: for example @media, @document, etc</li>
+                    <li>Comment: css comments</li>
+                    <li>Declaration: for example: "color: red"</li>
+                    <li>Function: Any function in selectors such ::not() or declarations, like linear-gradient()</li>
+                    <li>Import: @import</li>
+                    <li>Keyword: All words not matching with the other types (red, center, 14px, etc...)</li>
+                    <li>Root: The object that content all code</li>
+                    <li>Rule: Object that content selectors and declarations</li>
+                    <li>Selector: An individual selector</li>
+                    <li>Value: The value of a declaration</li>
+                </ul>
+
+                <h2 id="demo">Try the demo!</h2>
+            </div>
+
+            <form class="demo">
+                <div class="demo-code">
+                    <label>
+                        Input: <a href="css/styles.css" class="code-loader">(Use the CSS of this page)</a>
+                        <textarea id="input-code" placeholder="Paste here your css code"></textarea>
+                    </label>
+                    <button type="submit">Convert &rarr;</button>
+                    <label>
+                        Output:
+                        <textarea id="output-code"></textarea>
+                    </label>
+                </div>
+
+                <div class="demo-options">
+                    <ul class="demo-plugins">
+                        <li>
+                            <strong>Plugins:</strong>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="checkbox" checked value="color">
+                                color
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="checkbox" checked value="fixes">
+                                fixes
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="checkbox" checked value="flex">
+                                flex
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="checkbox" checked value="initial">
+                                initial
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="checkbox" checked value="linear-gradient">
+                                linear-gradient
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="checkbox" checked value="matches">
+                                matches
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="checkbox" checked value="nested-rules">
+                                nested-rules
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="checkbox" checked value="prefixes">
+                                prefixes
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="checkbox" checked value="rem">
+                                rem
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="checkbox" checked value="variables">
+                                variables
+                            </label>
+                        </li>
+                    </ul>
+
+                    <ul class="demo-support">
+                        <li>
+                            <strong>Browser support:</strong>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="number" id="support-ie" name="explorer" min="0" value="8">
+                                Internet Explorer
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="number" id="support-ff" name="firefox" min="0" value="30">
+                                Mozilla Firefox
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="number" id="support-gc" name="chrome" min="0" value="35">
+                                Google Chrome
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="number" id="support-sf" name="safari" min="0" value="5">
+                                Apple Safari
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="number" id="support-op" name="opera" min="0" value="22">
+                                Opera
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="number" id="support-an" name="android" min="0" value="4">
+                                Android
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="number" id="support-ios" name="ios" min="0" value="6">
+                                iOS
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+
+            <footer class="page-footer">
+                <p>Project maintained by <a href="https://github.com/oscarotero">oscarotero</a> | <a href="https://github.com/stylecow/stylecow/blob/master/LICENSE">MIT license</a></p>
+            </footer>
+        </main>
+
+        <script type="text/javascript" src="js/all.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('body').scrollspy({target: '.page-navigation'});
+
+                //Stylecow code
+                var stylecow = require('./js/main');
+
+                var $input = $('#input-code');
+                var $output = $('#output-code');
+                var $plugins = $('.demo-plugins input');
+                var $support = $('.demo-support input');
+
+                $('.demo').submit(function (e) {
+                    e.preventDefault();
+
+                    var plugins = [];
+                    var support = {};
+
+                    $plugins.each(function () {
+                        var $input = $(this);
+
+                        if ($input.is(':checked')) {
+                            plugins.push($input.val());
+                        }
+                    });
+
+                    $support.each(function () {
+                        var $input = $(this);
+
+                        support[$input.attr('name')] = $input.val();
+                    });
+
+                    $output.val(stylecow($input.val(), plugins, support));
+                });
+
+                $('.code-loader').click(function (e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        url: $(this).attr('href'),
+                        dataType: 'text',
+                        success: function (text) {
+                            $input.val(text);
+                        }
+                    });
+                });
+            });
+        </script>
+    </body>
 </html>

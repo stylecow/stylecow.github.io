@@ -76,6 +76,15 @@ code {
 	small {
 		color: var(--color);
 	}
+
+	.forkme {
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-image: url(forkme.png);
+		width: 149px;
+		height: 149px;
+	}
 }
 
 .page-navigation {
@@ -200,6 +209,14 @@ code {
 		font-weight: 800;
 		text-align: center;
 		text-transform: uppercase;
+
+		> a {
+			font-weight: normal;
+			text-transform: none;
+			color: inherit;
+			font-size: 0.9em;
+			margin-left: 10px;
+		}
 	}
 
 	textarea {

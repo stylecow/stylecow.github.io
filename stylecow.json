@@ -1,0 +1,27 @@
+{
+	"input": "css/styles.css",
+	"output": "css/styles.min.css",
+	"support": {
+		"explorer": 10,
+		"firefox": 30,
+		"chrome": 35,
+		"safari": 6,
+		"opera": 22,
+		"android": 4,
+		"ios": 6
+	},
+	"plugins": [
+		"color",
+		"fixes",
+		"flex",
+		"import",
+		"initial",
+		"linear-gradient",
+		"matches",
+		"nested-rules",
+		"prefixes",
+		"rem",
+		"variables"
+	],
+	"code": "minify"
+}
