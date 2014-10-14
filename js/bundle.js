@@ -10,7 +10,7 @@ module.exports = function (code, plugins, support) {
 	return stylecow.convert(code).toString();
 }
 
-},{"stylecow":47}],1:[function(require,module,exports){
+},{"stylecow":48}],1:[function(require,module,exports){
 
 },{}],2:[function(require,module,exports){
 var color = {
@@ -1869,7 +1869,7 @@ module.exports = function (stylecow) {
 
 })(require('./index'));
 
-},{"./index":47}],36:[function(require,module,exports){
+},{"./index":48}],36:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.AtRule = function (name) {
@@ -1913,7 +1913,7 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":47}],37:[function(require,module,exports){
+},{"../index":48}],37:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Base = Object.create(Array.prototype, {
@@ -2257,7 +2257,7 @@ module.exports = function (stylecow) {
 
 })(require('../index'));
 
-},{"../index":47}],38:[function(require,module,exports){
+},{"../index":48}],38:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Comment = function (text) {
@@ -2309,7 +2309,7 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":47}],39:[function(require,module,exports){
+},{"../index":48}],39:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Declaration = function (name, value) {
@@ -2389,7 +2389,7 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":47}],40:[function(require,module,exports){
+},{"../index":48}],40:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Function = function (name, args) {
@@ -2445,7 +2445,7 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":47}],41:[function(require,module,exports){
+},{"../index":48}],41:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Import = function (url) {
@@ -2475,7 +2475,7 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":47}],42:[function(require,module,exports){
+},{"../index":48}],42:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Keyword = function (name) {
@@ -2508,7 +2508,7 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":47}],43:[function(require,module,exports){
+},{"../index":48}],43:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Root = function () {
@@ -2549,7 +2549,7 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":47}],44:[function(require,module,exports){
+},{"../index":48}],44:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Rule = function () {
@@ -2658,7 +2658,7 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":47}],45:[function(require,module,exports){
+},{"../index":48}],45:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Selector = function (name) {
@@ -2707,7 +2707,7 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":47}],46:[function(require,module,exports){
+},{"../index":48}],46:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Value = function (name) {
@@ -2748,7 +2748,64 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":47}],47:[function(require,module,exports){
+},{"../index":48}],47:[function(require,module,exports){
+(function (stylecow) {
+
+	stylecow.Error = function (message, data, prevError) {
+		this.message = message;
+		this.data = data;
+		this.prevError = prevError;
+	};
+
+	stylecow.Error.prototype = {
+
+		getFirstError: function () {
+			if (this.prevError instanceof stylecow.Error) {
+				return this.prevError.getFirstError();
+			}
+
+			return this;
+		},
+
+		toFullString: function () {
+			var string = this.toString();
+
+			if (this.prevError instanceof stylecow.Error) {
+				string += '\n------------------\n' + this.prevError.toFullString();
+			}
+
+			return string;
+		},
+
+		toString: function () {
+			var string = this.message;
+
+			stylecow.utils.forEach(this.data, function (value, key) {
+				string += '\n' + key + ': ' + value;
+			});
+
+			return string;
+		},
+
+		toCode: function () {
+			var root = stylecow.Root.create('body>*{display:none;}');
+			var rule = root.add(new stylecow.Rule());
+
+			rule.content = [
+				'content: "' + this.toString().replace(/\n/g, ' \\A ').replace(/"/, '\\"') + '"',
+				'background: white',
+				'color: black',
+				'font-family: monospace',
+				'white-space: pre'
+			];
+			rule.selector = 'body::before';
+			
+			return root;
+		}
+	};
+})(require('./index'));
+
+},{"./index":48}],48:[function(require,module,exports){
 (function (stylecow) {
 	var fs = require('fs');
 
@@ -2766,6 +2823,7 @@ module.exports = function (stylecow) {
 	require('./css/at-rule');
 
 	//Utils
+	require('./error');
 	require('./utils');
 	require('./config');
 
@@ -2779,7 +2837,11 @@ module.exports = function (stylecow) {
 
 	//Create from code string
 	stylecow.create = function (code) {
-		return stylecow.Root.create(code);
+		try {
+			return stylecow.Root.create(code);
+		} catch (error) {
+			return error.getFirstError().toCode();
+		}
 	};
 
 
@@ -2825,14 +2887,13 @@ module.exports = function (stylecow) {
 
 	//Set configuration
 	stylecow.setConfig = function (config) {
+		stylecow.support = config.support;
+		stylecow.codeStyle = stylecow.codeStyles[config.code];
 		stylecow.tasks = {};
 
 		config.plugins.forEach(function (name) {
 			require(stylecow.pluginPrefix + name)(stylecow);
 		});
-
-		stylecow.support = config.support;
-		stylecow.codeStyle = stylecow.codeStyles[config.code];
 	};
 
 
@@ -2858,7 +2919,7 @@ module.exports = function (stylecow) {
 
 })(require('./index'));
 
-},{"./config":35,"./css/at-rule":36,"./css/base":37,"./css/comment":38,"./css/declaration":39,"./css/function":40,"./css/import":41,"./css/keyword":42,"./css/root":43,"./css/rule":44,"./css/selector":45,"./css/value":46,"./index":47,"./utils":48,"fs":1}],48:[function(require,module,exports){
+},{"./config":35,"./css/at-rule":36,"./css/base":37,"./css/comment":38,"./css/declaration":39,"./css/function":40,"./css/import":41,"./css/keyword":42,"./css/root":43,"./css/rule":44,"./css/selector":45,"./css/value":46,"./error":47,"./index":48,"./utils":49,"fs":1}],49:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.utils = {
@@ -3162,15 +3223,23 @@ module.exports = function (stylecow) {
 								case 'rules':
 									var matches = buffer.trim().match(/^@([^\s]+)\s(.*)$/m);
 
-									if (matches) {
-										newChild = new stylecow.AtRule(matches[1]);
-										buffer = matches[2];
-									} else {
-										newChild = new stylecow.Rule();
-									}
+									try {
+										if (matches) {
+											newChild = new stylecow.AtRule(matches[1]);
+											buffer = matches[2];
+										} else {
+											newChild = new stylecow.Rule();
+										}
 
-									child = child.add(newChild).setData('sourceColumn', col).setData('sourceLine', line);
-									child.selector = buffer.slice(0, -1);
+										child = child.add(newChild).setData('sourceColumn', col).setData('sourceLine', line);
+										child.selector = buffer.slice(0, -1);
+									} catch (error) {
+										throw new stylecow.Error('Error parsing CSS code', {
+											code: buffer,
+											column: col,
+											line: line
+										}, error);
+									}
 
 									buffer = '';
 									status.unshift('rules');
@@ -3184,7 +3253,15 @@ module.exports = function (stylecow) {
 									buffer = buffer.slice(0, -1);
 
 									if (buffer.trim()) {
-										child.add(buffer).setData('sourceColumn', col).setData('sourceLine', line);
+										try {
+											child.add(buffer).setData('sourceColumn', col).setData('sourceLine', line);
+										} catch (error) {
+											throw new stylecow.Error('Error parsing CSS rule', {
+												code: buffer,
+												column: col,
+												line: line
+											}, error);
+										}
 									}
 
 									buffer = '';
@@ -3200,9 +3277,25 @@ module.exports = function (stylecow) {
 								case 'selector':
 
 									if (buffer.indexOf('@import') !== -1) {
-										newChild = stylecow.Import.create(buffer);
+										try {
+											newChild = stylecow.Import.create(buffer);
+										} catch (error) {
+											throw new stylecow.Error('Error parsing CSS @import rule', {
+												code: buffer,
+												column: col,
+												line: line
+											}, error);
+										}
 									} else {
-										newChild = stylecow.Declaration.create(buffer);
+										try {
+											newChild = stylecow.Declaration.create(buffer);
+										} catch (error) {
+											throw new stylecow.Error('Error parsing CSS declaration', {
+												code: buffer,
+												column: col,
+												line: line
+											}, error);
+										}
 									}
 
 									newChild.setData('sourceColumn', col).setData('sourceLine', line);
@@ -3213,7 +3306,15 @@ module.exports = function (stylecow) {
 									break;
 
 								case 'rules':
-									child.add(buffer.slice(0, -1)).setData('sourceColumn', col).setData('sourceLine', line);
+									try {
+										child.add(buffer.slice(0, -1)).setData('sourceColumn', col).setData('sourceLine', line);
+									} catch (error) {
+										throw new stylecow.Error('Error parsing CSS rule', {
+											code: buffer,
+											column: col,
+											line: line
+										}, error);
+									}
 									buffer = '';
 									break;
 							}
@@ -3232,7 +3333,15 @@ module.exports = function (stylecow) {
 									}
 								}
 							} else if (previousChar === '*') {
-								child.add(stylecow.Comment.create(buffer)).setData('sourceColumn', col).setData('sourceLine', line);
+								try {
+									child.add(stylecow.Comment.create(buffer)).setData('sourceColumn', col).setData('sourceLine', line);
+								} catch (error) {
+									throw new stylecow.Error('Error parsing CSS comment', {
+										code: buffer,
+										column: col,
+										line: line
+									}, error);
+								}
 								buffer = '';
 								status.shift();
 							}
@@ -3247,7 +3356,15 @@ module.exports = function (stylecow) {
 			}
 
 			if (buffer.trim() && (status[0] === 'root')) {
-				child.add(stylecow.Declaration.create(buffer));
+				try {
+					child.add(stylecow.Declaration.create(buffer));
+				} catch (error) {
+					throw new stylecow.Error('Error parsing CSS declaration', {
+						code: buffer,
+						column: col,
+						line: line
+					}, error);
+				}
 			}
 
 			return parent;
@@ -3422,7 +3539,7 @@ module.exports = function (stylecow) {
 
 })(require('./index'));
 
-},{"./index":47}],"stylecow-plugin-color":[function(require,module,exports){
+},{"./index":48}],"stylecow-plugin-color":[function(require,module,exports){
 //http://dev.w3.org/csswg/css-color/
 
 var color = require('stylecow-color');
