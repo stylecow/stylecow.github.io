@@ -6,6 +6,9 @@
         <title>stylecow</title>
 
         <link rel="stylesheet" type="text/css" href="css/styles.min.css">
+        <link rel="stylesheet" type="text/css" href="js/highlight/styles/github.css">
+        <script type="text/javascript" src="js/highlight/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
     </head>
 
     <body>
@@ -44,7 +47,8 @@
   "dependencies": {
     "stylecow": "*",
     "stylecow-plugin-color": "*",
-    "stylecow-plugin-variables": "*"
+    "stylecow-plugin-variables": "*",
+    "stylecow-plugin-nested-rules": "*"
   }
 }
 </code></pre>
@@ -73,7 +77,8 @@ stylecow.setConfig({
     //Plugins to execute (without "stylecow-plugin-")
     plugins: [
         "color",
-        "variables"
+        "variables",
+        "nested-rules"
     ],
 
     //Code style used (normal or minify)
@@ -113,7 +118,8 @@ var code = css.toCode();
     },
     "plugins": [
         "color",
-        "variables"
+        "variables",
+        "nested-rules"
     ],
     "code": "minify"
 }
@@ -160,7 +166,8 @@ var code = css.toCode();
                 },
                 "plugins": [
                     "color",
-                    "variables"
+                    "variables",
+                    "nested-rules"
                 ],
                 "code": "normal"
             },
@@ -209,42 +216,147 @@ var code = css.toCode();
 
                 <h3>Support for CSS incoming features:</h3>
 
-                <ul>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-color">color</a></li>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-matches">matches</a></li>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-nested-rules">nested-rules</a></li>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-variables">variables</a></li>
-                </ul>
+                <table>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-color">color:</a>
+                        </td>
+                        <td>
+                            manipulate colors using the CSS Colors Module Level 4 syntax
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-matches">matches:</a>
+                        </td>
+                        <td>
+                            add support for <code>:matches()</code> selector
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-nested-rules">nested-rules:</a>
+                        </td>
+                        <td>
+                            allows nested rules
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-variables">variables:</a>
+                        </td>
+                        <td>
+                            allows the use of CSS variables
+                        </td>
+                    </tr>
+                </table>
 
                 <h3>Utilities:</h3>
 
-                <ul>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-import">import</a> (To insert the code of the <code>@import</code> rules with relative urls)</li>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-source-comment">source-comment</a></li>
-                </ul>
+                <table>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-import">import:</a>
+                        </td>
+                        <td>
+                            To insert the code of the <code>@import</code> rules with relative urls
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-source-comment">source-comment:</a>
+                        </td>
+                        <td>
+                            Adds comments like <code>/* css/styles.css:12 */</code> before with the location of each rule in the original code
+                        </td>
+                    </tr>
+                </table>
 
                 <h3>Code fixing:</h3>
 
-                <ul>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-fixes">fixes</a></li>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-flex">flex</a></li>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-initial">initial</a></li>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-linear-gradient">linear-gradient</a></li>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-prefixes">prefixes</a></li>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-rem">rem</a></li>
-                </ul>
+                <table>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-fixes">fixes:</a>
+                        </td>
+                        <td>
+                            Fixes automatically some well-know browsers issues
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-flex">flex:</a>
+                        </td>
+                        <td>
+                            To use the latest syntax of flexbox, generating the fallback for browsers supporting deprecated syntax.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-initial">initial:</a>
+                        </td>
+                        <td>
+                            Add support for <code>initial</code> value
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-linear-gradient">linear-gradient</a>
+                        </td>
+                        <td>
+                            Creates automatically fallbacks for browser supporting the older syntax of <code>linear-gradient</code>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-prefixes">prefixes</a>
+                        </td>
+                        <td>
+                            Adds automatically all vendor prefixes needed
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-rem">rem</a>
+                        </td>
+                        <td>
+                            Adds fallback for <code>rem</code> values in pixels
+                        </td>
+                    </tr>
+                </table>
 
                 <h3>Emulation of some features in old Internet Explorer using ms-filters:</h3>
 
-                <ul>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-background-alpha">msfilter-background-alpha</a></li>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-linear-gradient">msfilter-linear-gradient</a></li>
-                    <li><a href="https://github.com/stylecow/stylecow-plugin-msfilter-transform">msfilter-transform</a></li>
-                </ul>
+                <table>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-msfilter-background-alpha">msfilter-background-alpha</a>
+                        </td>
+                        <td>
+                            Emulate the <code>rgba()</code> background in Internet Explorer 8 and lower using ms filters
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-msfilter-linear-gradient">msfilter-linear-gradient</a>
+                        </td>
+                        <td>
+                            Emulate the <code>linear-gradient()</code> background in Internet Explorer 8 and lower using ms filters
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="https://github.com/stylecow/stylecow-plugin-msfilter-transform">msfilter-transform</a>
+                        </td>
+                        <td>
+                            Emulate the CSS 2d transformations in Internet Explorer 8 and lower using ms filters
+                        </td>
+                    </tr>
+                </table>
 
                 <h2 id="tasks">Custom tasks</h2>
 
-                <p>In addition to the plugins, you can create your own custom tasks to convert the css code as you want. A task is a function or functions executed for each css element found in the code (a rule, a declaration, etc). Let's see an example:</p>
+                <p>In addition to the plugins, you can create your own custom tasks to convert the css code as you want. A task is a function executed for each css element found in the code (a rule, a declaration, etc). Let's see an example:</p>
 
 <pre><code>stylecow.addTask({
     Declaration: {
@@ -269,59 +381,8 @@ var code = css.toCode();
 }
 </code></pre>
 
-                <p>You can see the code of the available plugins (they are really tasks) to know how to create your own plugins.</p>
-                
-                <p>Note that the tasks are executed from the deeper object to up. For example, if a task has a callback executed in the function "linear-gradient()" and other executed in the declaration "background-image", the "linear-gradient" callback will be executed before "background-image". If you need to execute the declaration callback before, it has to be inside "BeforeDeclaration" instead "Declaration".</p>
 
-                <p>There is a special property called "disable", to disable the execution of this task when the minimal browser support is equal or upper than the specified. Examples:</p>
-
-<pre><code>stylecow.addTask({
-
-    //Disable this task whether the firefox version is 20 or more
-    disable: {
-        firefox: 20.0
-    },
-
-    Declaration: {
-
-        //Callbak executed in declarations named "colour"
-        colour: function (declaration) {
-            //Your code
-        },
-
-        //Callback executed in all declarations
-        "*": function (declaration) {
-            //Your code
-        }
-    },
-
-    //Callback executed in all rules
-    Rule: function (rule) {
-        //Your code
-    },
-
-    //Callback executed in all rules
-    //before execute the children callbacks
-    BeforeRule: function (rule) {
-        //Your code
-    }
-});
-</code></pre>
-
-                <p>The available type objects can increase, but for now are:</p>
-
-                <ul>
-                    <li>AtRule: for example @media, @document, etc</li>
-                    <li>Comment: css comments</li>
-                    <li>Declaration: for example: "color: red"</li>
-                    <li>Function: Any function in selectors such ::not() or declarations, like linear-gradient()</li>
-                    <li>Import: @import</li>
-                    <li>Keyword: All words not matching with the other types (red, center, 14px, etc...)</li>
-                    <li>Root: The object that content all code</li>
-                    <li>Rule: Object that content selectors and declarations</li>
-                    <li>Selector: An individual selector</li>
-                    <li>Value: The value of a declaration</li>
-                </ul>
+                <p>To know how to create your own tasks to manipulate the css as you like, <a href="#">here you can read the documentation</a></p>
 
                 <h2 id="demo">Try the demo!</h2>
             </div>

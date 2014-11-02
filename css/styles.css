@@ -1,5 +1,5 @@
 @import url(//fonts.googleapis.com/css?family=Lora:400);
-@import url(//fonts.googleapis.com/css?family=Open+Sans:300,400,800);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:300,400,700,800);
 @import url(csans.css);
 @import url(csans.helpers.css);
 
@@ -8,6 +8,7 @@
 	--color: #505166;
 	--font-sans: 'Open Sans', Helvetica, sans-serif;
 	--font-serif: 'Lora', Georgia, sans-serif;
+	--gray: #F8F8F8;
 }
 
 body {
@@ -16,9 +17,16 @@ body {
 	position: relative;
 }
 
-h1, h2, h3, strong {
+h1, h2, h3 {
 	font-family: var(--font-sans);
 	font-weight: 400;
+}
+strong {
+	font-family: var(--font-sans);
+	font-weight: 700;
+}
+li {
+	margin-top: 0.3em;
 }
 
 a {
@@ -33,22 +41,29 @@ p {
 }
 pre {
 	margin: 1em 0;
-
-	code {
-		color: white;
-		background: var(--black);
-		display: block;
-
-		&::selection {
-			background: color(var(--color) lightness(-20));
-		}
-	}
 }
 code {
 	border-radius: 3px;
-	background: color(var(--color) tint(10));
+	background: var(--gray);
+	border: solid 1px color(var(--black) tint(10));
 	padding: 0.2em 0.4em;
 	font-size: 1rem;
+}
+table {
+	font-size: 1rem;
+	font-family: var(--font-sans);
+	width: 100%;
+
+	th {
+		padding: 0.5em;
+	}
+
+	td {
+		padding: 0.5em;
+		vertical-align: initial;
+		background: var(--gray);
+		border-color: color(var(--black) tint(20));
+	}
 }
 
 .page-header {

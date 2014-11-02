@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>stylecow</title>
+
+        <link rel="stylesheet" type="text/css" href="css/styles.min.css">
+        <link rel="stylesheet" type="text/css" href="js/highlight/styles/github.css">
+        <script type="text/javascript" src="js/highlight/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+    </head>
+
+    <body>
+        <main>
+            <header>
+                <h1>docs</h1>
+                <p>Modern CSS to all browsers</p>
+            </header>
+
+            <div class="page-content">
+                <h2>CSS parser</h2>
+
+                <p>The stylecow parser converts a string with css code in an object oriented structure. Each object represents a css element (a rule, a declaration, a value, a selector, etc). Let's take, for example, the following code:</p>
+
+<pre><code>html, body {
+    font-family: Arial, Helvetica;
+    color: black;
+    margin: 10px 20px;
+}
+</code></pre>
+                <p>The object oriented representation is something like:</p>
+<pre><code>[Object Root] [
+  [Object Rule] [
+     [Object Selector] [
+        [Object Keyword name="html"]
+     ],
+     [Object Selector] [
+        [Object Keyword name="body"]
+     ],
+     [Object Declaration name="font-family"] [
+        [Object Value] [
+           [Object Keyword name="Arial"]
+        ],
+        [Object Value] [
+           [Object Keyword name="Helvetica"]
+        ]
+     ]
+     [Object Declaration name="color"] [
+        [Object Value] [
+           [Object Keyword name="black"]
+        ]
+     ],
+     [Object Declaration name="margin"] [
+        [Object Value] [
+           [Object Keyword name="10px"],
+           [Object Keyword name="20px"]
+        ]
+     ]
+  ]
+]
+</code></pre>
+                <p>Because all objects extend the Array.prototype you can iterate with the objects in the following way:</p>
+
+<pre><code>var stylecow = require('stylecow');
+var code = stylecow.parseFile('styles.css');
+
+console.log(code);             //[Object Root]
+console.log(code[0]);          //[Object Rule]
+console.log(code[0][0]);       //[Object Selector]
+console.log(code[0][1]);       //[Object Selector]
+console.log(code[0][2]);       //[Object Declaration name="font-family"]
+console.log(code[0][2][0]);    //[Object Value]
+console.log(code[0][2][0][0]); //[Object Keyword name="Arial"]
+
+
+// you can use all Array.prototype methods
+// to iterate with the code (forEach, some, every, filter, etc)
+
+//Iterate through all childrens of the root
+code.forEach(function (child) {
+    console.log(child.type);
+});
+
+//Check if the first rule has any selector
+var hasSelector = code[0].some(function (child) {
+    return child.type === 'Selector';
+});
+</code></pre>
+                
+                <p>All objects can be converted to css code easily, using the method <code>.toString()</code></p>
+
+<pre><code>//Stringify the code
+console.log(code.toString());
+
+/*
+html, body {
+    font-family: Arial, Helvetica;
+    color: black;
+    margin: 10px 20px;
+}
+*/
+
+//Stringify just some part of the code:
+var declaration = code[0][2];
+
+console.log(declaration.toString());
+// font-family: Arial, Helvetica;
+
+//toString() is called automatically on use the object as a string:
+
+console.log('Declaration -> ' + declaration);
+// Declaration -> font-family: Arial, Helvetica;
+</code></pre>
+
+                <p>There are several types of objects available, some with extra properties, such "name" or "value". In the future, the number of objects can increase for more specify, but for now, the available types are:</p>
+
+                <table>
+                    <tr>
+                        <th>Argument</th>
+                        <td>
+                            <p>To store a function argument. For example the function <code>rgb(12, 34, 56)</code> has three arguments</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>AtRule</th>
+                        <td>
+                            <p>Stores an at-rule. For example <code>@import</code>, <code>@charset</code></p>
+
+                            <ul>
+                                <li><strong>name:</strong> Returns the rule name (omiting "@").</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Comment</th>
+                        <td>
+                            <p>Contains a css comment.</p>
+
+                            <ul>
+                                <li><strong>name:</strong> Returns the comment text.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Condition</th>
+                        <td>
+                            <p>Contains css conditions (media queries, support conditions, etc).</p>
+
+                            <ul>
+                                <li><strong>name:</strong> Returns the condition content.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Declaration</th>
+                        <td>
+                            <p>To store a css declaration.</p>
+
+                            <ul>
+                                <li><strong>name:</strong> Returns the declaration name.</li>
+                                <li><strong>value:</strong> Returns the declaration value as a string</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Function</th>
+                        <td>
+                            <p>Contains a css function.</p>
+
+                            <ul>
+                                <li><strong>name:</strong> Returns the function name.</li>
+                                <li><strong>value:</strong> Returns the function arguments as a string</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Keyword</th>
+                        <td>
+                            <p>Used to store arbitrary values.</p>
+
+                            <ul>
+                                <li><strong>name:</strong> Returns the keyword content.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>NestedAtRule</th>
+                        <td>
+                            <p>Represents an at-rule that content nested rules (for example <code>@media</code>, <code>@font-face</code>, etc).</p>
+
+                            <ul>
+                                <li><strong>name:</strong> Returns the nested-rule name (omiting the "@").</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Root</th>
+                        <td>
+                            <p>Object that content the whole css code</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Rule</th>
+                        <td>
+                            <p>Represents a css rule.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Selector</th>
+                        <td>
+                            <p>Represents a css selector.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Value</th>
+                        <td>
+                            <p>Represents a value of a declaration.</p>
+                        </td>
+                    </tr>
+                </table>
+
+                <h2>The API</h2>
+
+                <p>All these objects have methods to manipulate and traversing the css elements:</p>
+
+                <p><strong>Traversing:</strong></p>
+
+                <nav>
+                    <a href="#api-is">.is()</a>
+                   | <a href="#api-children">.children()</a>
+                   | <a href="#api-firstChild">.firstChild()</a>
+                   | <a href="#api-haschild">.hasChild()</a>
+                   | <a href="#api-search">.search()</a>
+                   | <a href="#api-searchfirst">.searchFirst()</a>
+                   | <a href="#api-has">.has()</a>
+                   | <a href="#api-next">.next()</a>
+                   | <a href="#api-prev">.prev()</a>
+                   | <a href="#api-parent">.parent()</a>
+                </nav>
+
+                <p><strong>Manipulation:</strong></p>
+
+                <nav>
+                    <a href="#api-clone">.clone()</a>
+                    | <a href="#api-clonebefore">.cloneBefore()</a>
+                    | <a href="#api-cloneafter">.cloneAfter()</a>
+                    | <a href="#api-add">.add()</a>
+                    | <a href="#api-append">.append()</a>
+                    | <a href="#api-prepend">.prepend()</a>
+                    | <a href="#api-insertbefore">.insertBefore()</a>
+                    | <a href="#api-insertafter">.insertAfter()</a>
+                    | <a href="#api-replacewith">.replaceWith()</a>
+                    | <a href="#api-remove">.remove()</a>
+                    | <a href="#api-detach">.detach()</a>
+                </nav>
+
+                <p><strong>Miscelaneous:</strong></p>
+
+                <nav>
+                    <a href="#api-setvalue">.setValue()</a>
+                    <a href="#api-getvalue">.getValue()</a>
+                    <a href="#api-getdata">.getData()</a>
+                    <a href="#api-setdata">.setData()</a>
+                    <a href="#api-index">.index()</a>
+                </nav>
+
+                <h3 id="api-is">.is()</h3>
+
+                <p>Check whether the element matches with the provided conditions. The conditions are defined in an object with the following properties:</p>
+
+                <ul>
+                    <li><strong>type:</strong> to test the element type (Rule, Declaration, Function, etc)</li>
+                    <li><strong>name:</strong> to test the element name (some elements like Rule or Selector has not name)</li>
+                    <li><strong>vendor:</strong> to test the element vendor prefix</li>
+                </ul>
+
+                <p>Usage example:</p>
+
+<pre><code>body {
+    border-radius: 3px;
+    font-size: 1em;
+    border-color: rgba(2, 34, 255, 0.5);
+    border-radius: 4px;
+}   
+</code></pre>
+
+<pre><code>//Parse the code:
+var code = require('stylecow').parseFile('styles.css');
+
+//Get the first rule:
+var rule = code[0];
+
+//Check the declarations named "border-radius" in the rule
+rule.forEach(function (declaration) {
+    console.log(declaration.is({
+        type: 'Declaration',
+        name: 'border-radius'
+    }));
+});
+
+/*
+true
+false
+false
+true
+*/
+
+//Use arrays to search between various values:
+rule.forEach(function (declaration) {
+    console.log(declaration.is({
+        type: 'Declaration',
+        name: ['border-radius', 'font-size']
+    }));
+});
+
+/*
+true
+true
+false
+true
+*/
+
+//Or even a regular expression:
+rule.forEach(function (declaration) {
+    console.log(declaration.is({
+        type: 'Declaration',
+        name: /^border-/
+    }));
+});
+
+/*
+true
+false
+true
+true
+*/
+
+</code></pre>
+
+                <h3 id="api-children">.children()</h3>
+
+                <p>Returns the direct children of an object. You can provide a filter to return only the children matching with some conditions.</p>
+
+<pre><code>body {
+    color: blue;
+}
+
+@media (min-width: 200px) {
+    body {
+        color: red;
+    }
+}
+@font-face {
+    font-family: 'myFont';
+    src: url(myfont.woff);
+}
+</code></pre>
+
+<pre><code>//Parse the code:
+var code = require('stylecow').parseFile('styles.css');
+
+//Get all children:
+var result = code.children();
+
+console.log(result.length); //3
+
+//Get only the objects of type "NestedAtRule"
+var result = code.children({
+    type: 'NestedAtRule'
+});
+
+console.log(result.length); //2
+
+//Get only the @media objects:
+var result = code.children({
+    type: 'NestedAtRule',
+    name: 'media'
+});
+
+console.log(result.length); //1
+</code></pre>
+
+                <h3 id="api-firstChild">.firstChild()</h3>
+
+                <p>It's like <code>.children()</code> but returns the first result found instead an array with all objects, and of course, you can provide a filter.</p>
+
+                <h3 id="api-haschild">.hasChild()</h3>
+
+                <p>Returns <code>true</code> if the object has at least one child matching with the filter. For example:</p>
+
+<pre><code>body {
+    border-radius: 3px;
+    font-size: 1em;
+}   
+</code></pre>          
+
+<pre><code>//Parse the code and get the first rule
+var code = require('stylecow').parseFile('styles.css');
+var rule = code.firstChild({type: 'Rule'});
+
+//Check if the rule has a "border-radius" statement
+rule.hasChild({type: 'Declaration', name: 'border-radius'}); //true
+
+//Check if the rule has a "color" statement
+rule.hasChild({type: 'Declaration', name: 'color'}); //false
+
+</code></pre>
+
+                <h3 id="api-search">.search()</h3>
+
+                <p>It's like <code>.children()</code> but search recursively in cascade and returns an array with all results found.</p>
+
+<pre><code>body {
+    color: blue;
+}
+p {
+    border-radius: 3px solid blue;
+    background: linear-gradient(blue, red);
+}
+</code></pre>
+
+<pre><code>//Parse the code
+var code = require('stylecow').parseFile('styles.css');
+
+//Search all keywords named "blue" and change to "green":
+code.search({
+    type: 'Keyword',
+    name: 'blue'
+}).forEach(function (keyword) {
+    keyword.name = 'green';
+});
+
+//Get the result code:
+console.log(code.toString());
+/*
+body {
+    color: green;
+}
+p {
+    border-radius: 3px solid green;
+    background: linear-gradient(green, red);
+}
+*/
+</code></pre>
+
+                <h3 id="api-searchfirst">.searchFirst()</h3>
+
+                <p>It's like <code>.search()</code> but returns the first element found.</p>
+
+                <h3 id="api-has">.has()</h3>
+
+                <p>Returns <code>true</code> if the object has at least one element matching with the filter. It's like <code>.hasChild()</code> but search recursively in all descendents</p>
+
+                <h3 id="api-next">.next()</h3>
+
+                <p>Returns the inmediate following sibling of the element. For example:</p>
+
+<pre><code>body {
+    color: blue;
+    font-family: Arial;
+    border: solid 1px red;
+}
+</code></pre>
+
+<pre><code>//Parse the code
+var code = require('stylecow').parseFile('styles.css');
+
+//Search the font-family declaration:
+var declaration = code.searchFirst({
+    type: 'Declaration',
+    name: 'font-family'
+});
+
+//Get the next sibling
+var next = declaration.next();
+
+console.log(next.toString()); // "border: solid 1px red"
+</code></pre>
+
+                <h3 id="api-prev">.prev()</h3>
+
+                <p>The same than <code>.next()</code> but returns the inmediate preceding sibling.</p>
+
+                <h3 id="api-parent">.parent()</h3>
+
+                <p>Returns the parent element. This function accepts a filter to return the first parent matching. For example:</p>
+
+<pre><code>body {
+    border: solid 1px red;
+}
+</code></pre>
+
+<pre><code>//Parse the code
+var code = require('stylecow').parseFile('styles.css');
+
+//Search the "red" keyword:
+var red = code.searchFirst({
+    type: 'Keyword',
+    name: 'red'
+});
+
+//Get the inmediate parent:
+console.log(red.parent()); // [Object Value]
+
+//Get the declaration parent:
+console.log(red.parent({type: 'Declaration'})); // [Object Declaration]
+
+//Get the declaration parent:
+console.log(red.parent({type: 'Rule'})); // [Object Rule]
+</code></pre>
+
+                <h3 id="api-clone">.clone()</h3>
+
+                <p>Creates a deep clone of the object (with all children)</p>
+
+<pre><code>body {
+    border-radius: 1px;
+}
+</code></pre>
+
+<pre><code>//Parse the code
+var code = require('stylecow').parseFile('styles.css');
+
+//Get the border-radius declaration:
+var declaration = code.searchFirst({type: 'Declaration', name: 'border-radius'});
+
+//Clone the declaration
+var cloned = declaration.clone();
+cloned.name = '-moz-border-radius';
+
+console.log(declaration.toString()); // border-radius: 1px;
+console.log(cloned.toString()); // -moz-border-radius: 1px;
+</code></pre>
+
+                <h3 id="api-clone">.cloneBefore()</h3>
+
+                <p>Creates a deep clone of the object and insert as preceding sibling.</p>
+
+<pre><code>body {
+    border-radius: 1px;
+}
+</code></pre>
+
+<pre><code>//Parse the code
+var code = require('stylecow').parseFile('styles.css');
+
+//Get the border-radius declaration:
+var declaration = code.searchFirst({type: 'Declaration', name: 'border-radius'});
+
+//Clone the declaration, insert before and change the name:
+declaration.cloneBefore().name = '-moz-border-radius';
+
+console.log(code.toString());
+
+/*
+body {
+    -moz-border-radius: 1px;
+    border-radius: 1px;
+}
+*/
+</code></pre>
+
+                <h3 id="api-cloneafter">.cloneAfter()</h3>
+
+                <p>It's like <code>.cloneBefore()</code> but insert the cloned element after.</p>
+
+            </div>
+        </main>
+    </body>
+</html>
