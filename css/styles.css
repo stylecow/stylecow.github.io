@@ -49,6 +49,7 @@ code {
 	padding: 0.2em 0.4em;
 	font-size: 1rem;
 }
+
 table {
 	font-size: 1rem;
 	font-family: var(--font-sans);
@@ -127,7 +128,7 @@ table {
 			display: block;
 			white-space: nowrap;
 
-			&:hover {
+			&:hover, &.selected {
 				border-bottom-color: color(var(--color) tint(50));
 			}
 		}
@@ -135,6 +136,48 @@ table {
 		li.active a {
 			border-bottom-color: var(--color);
 		}
+	}
+}
+
+.page-menu {
+	background: color(var(--color) tint(10));
+
+	nav {
+		max-width: 20em;
+		width: 30%;
+		padding: 40px 20px;
+		font-family: var(--font-sans);
+		font-size: 1rem;
+		margin: 0;
+
+		a {
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+}
+
+@media (min-width: 670px) {
+	.page-menu {
+		display: flex;
+		justify-content: center;
+	}
+}
+
+.content-header {
+	text-align: center;
+	padding: 50px 20px;
+	background: color(var(--color) lightness(50));
+	color: white;
+
+	h1 {
+		margin: 0;
+		font-size: 3.4rem;
+		letter-spacing: -0.05em;
+		line-height: 1;
 	}
 }
 
@@ -172,7 +215,6 @@ table {
 		}
 	}
 }
-
 
 
 .page-content {

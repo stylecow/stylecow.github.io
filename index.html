@@ -23,18 +23,17 @@
 
             <nav class="page-navigation">
                 <ul class="nav">
-                    <li><a href="#welcome">Hi!</a></li>
-                    <li><a href="#quick-start">Quick start</a></li>
-                    <li><a href="#cli">Cli</a></li>
-                    <li><a href="#grunt">Grunt</a></li>
-                    <li><a href="#plugins">Plugins</a></li>
-                    <li><a href="#tasks">Customize</a></li>
-                    <li><a href="#demo">Demo</a></li>
+                    <li><a href="index.html#quick-start">Quick start</a></li>
+                    <li><a href="index.html#cli">Cli</a></li>
+                    <li><a href="index.html#grunt">Grunt</a></li>
+                    <li><a href="index.html#plugins">Plugins</a></li>
+                    <li><a href="docs.html">Docs</a></li>
+                    <li><a href="api.html">API</a></li>
                 </ul>
             </nav>
 
             <div class="page-content">
-                <h2 id="welcome">Why another CSS preprocessor?</h2>
+                <h2>Why another CSS preprocessor?</h2>
 
                 <p>The main purpose of stylecow is to bring more CSS support to all browsers. Stylecow converts your code to be more compatible with all browsers adding vendor prefixes, fixing issues, generating polyfills, etc.</p>
 
@@ -301,14 +300,6 @@ var code = css.toCode();
                     </tr>
                     <tr>
                         <td>
-                            <a href="https://github.com/stylecow/stylecow-plugin-linear-gradient">linear-gradient</a>
-                        </td>
-                        <td>
-                            Creates automatically fallbacks for browser supporting the older syntax of <code>linear-gradient</code>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
                             <a href="https://github.com/stylecow/stylecow-plugin-prefixes">prefixes</a>
                         </td>
                         <td>
@@ -354,36 +345,6 @@ var code = css.toCode();
                     </tr>
                 </table>
 
-                <h2 id="tasks">Custom tasks</h2>
-
-                <p>In addition to the plugins, you can create your own custom tasks to convert the css code as you want. A task is a function executed for each css element found in the code (a rule, a declaration, etc). Let's see an example:</p>
-
-<pre><code>stylecow.addTask({
-    Declaration: {
-        colour: function (declaration) {
-            declaration.name = "color";
-        }
-    }
-});
-</code></pre>
-
-                <p>In this task, we defined a function that will be executed for each object of type "Declaration" named "colour" and changes the name to "color". If we execute this task with the following code:</p>
-
-<pre><code>.foo {
-    colour: red;
-}
-</code></pre>
-
-                <p>The result is:</p>
-
-<pre><code>.foo {
-    color: red;
-}
-</code></pre>
-
-
-                <p>To know how to create your own tasks to manipulate the css as you like, <a href="#">here you can read the documentation</a></p>
-
                 <h2 id="demo">Try the demo!</h2>
             </div>
 
@@ -427,12 +388,6 @@ var code = css.toCode();
                             <label>
                                 <input type="checkbox" checked value="initial">
                                 initial
-                            </label>
-                        </li>
-                        <li>
-                            <label>
-                                <input type="checkbox" checked value="linear-gradient">
-                                linear-gradient
                             </label>
                         </li>
                         <li>

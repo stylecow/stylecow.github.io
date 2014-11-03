@@ -13,10 +13,22 @@
 
     <body>
         <main>
-            <header>
-                <h1>docs</h1>
-                <p>Modern CSS to all browsers</p>
+            <header class="content-header">
+                <h1>Documentation</h1>
+
+                <p>How stylecow parse the code</p>
             </header>
+
+            <nav class="page-navigation">
+                <ul class="nav">
+                    <li><a href="index.html#quick-start">Quick start</a></li>
+                    <li><a href="index.html#cli">Cli</a></li>
+                    <li><a href="index.html#grunt">Grunt</a></li>
+                    <li><a href="index.html#plugins">Plugins</a></li>
+                    <li><a class="selected" href="docs.html">Docs</a></li>
+                    <li><a href="api.html">API</a></li>
+                </ul>
+            </nav>
 
             <div class="page-content">
                 <h2>CSS parser</h2>
@@ -220,351 +232,39 @@ console.log('Declaration -> ' + declaration);
                     </tr>
                 </table>
 
-                <h2>The API</h2>
+                <h2>Create your custom tasks</h2>
 
-                <p>All these objects have methods to manipulate and traversing the css elements:</p>
+                <p>In addition to the plugins, you can create your own custom tasks to convert the css code as you want. A task is a function executed for each css element found in the code (a rule, a declaration, etc). Let's see an example:</p>
 
-                <p><strong>Traversing:</strong></p>
-
-                <nav>
-                    <a href="#api-is">.is()</a>
-                   | <a href="#api-children">.children()</a>
-                   | <a href="#api-firstChild">.firstChild()</a>
-                   | <a href="#api-haschild">.hasChild()</a>
-                   | <a href="#api-search">.search()</a>
-                   | <a href="#api-searchfirst">.searchFirst()</a>
-                   | <a href="#api-has">.has()</a>
-                   | <a href="#api-next">.next()</a>
-                   | <a href="#api-prev">.prev()</a>
-                   | <a href="#api-parent">.parent()</a>
-                </nav>
-
-                <p><strong>Manipulation:</strong></p>
-
-                <nav>
-                    <a href="#api-clone">.clone()</a>
-                    | <a href="#api-clonebefore">.cloneBefore()</a>
-                    | <a href="#api-cloneafter">.cloneAfter()</a>
-                    | <a href="#api-add">.add()</a>
-                    | <a href="#api-append">.append()</a>
-                    | <a href="#api-prepend">.prepend()</a>
-                    | <a href="#api-insertbefore">.insertBefore()</a>
-                    | <a href="#api-insertafter">.insertAfter()</a>
-                    | <a href="#api-replacewith">.replaceWith()</a>
-                    | <a href="#api-remove">.remove()</a>
-                    | <a href="#api-detach">.detach()</a>
-                </nav>
-
-                <p><strong>Miscelaneous:</strong></p>
-
-                <nav>
-                    <a href="#api-setvalue">.setValue()</a>
-                    <a href="#api-getvalue">.getValue()</a>
-                    <a href="#api-getdata">.getData()</a>
-                    <a href="#api-setdata">.setData()</a>
-                    <a href="#api-index">.index()</a>
-                </nav>
-
-                <h3 id="api-is">.is()</h3>
-
-                <p>Check whether the element matches with the provided conditions. The conditions are defined in an object with the following properties:</p>
-
-                <ul>
-                    <li><strong>type:</strong> to test the element type (Rule, Declaration, Function, etc)</li>
-                    <li><strong>name:</strong> to test the element name (some elements like Rule or Selector has not name)</li>
-                    <li><strong>vendor:</strong> to test the element vendor prefix</li>
-                </ul>
-
-                <p>Usage example:</p>
-
-<pre><code>body {
-    border-radius: 3px;
-    font-size: 1em;
-    border-color: rgba(2, 34, 255, 0.5);
-    border-radius: 4px;
-}   
-</code></pre>
-
-<pre><code>//Parse the code:
-var code = require('stylecow').parseFile('styles.css');
-
-//Get the first rule:
-var rule = code[0];
-
-//Check the declarations named "border-radius" in the rule
-rule.forEach(function (declaration) {
-    console.log(declaration.is({
-        type: 'Declaration',
-        name: 'border-radius'
-    }));
-});
-
-/*
-true
-false
-false
-true
-*/
-
-//Use arrays to search between various values:
-rule.forEach(function (declaration) {
-    console.log(declaration.is({
-        type: 'Declaration',
-        name: ['border-radius', 'font-size']
-    }));
-});
-
-/*
-true
-true
-false
-true
-*/
-
-//Or even a regular expression:
-rule.forEach(function (declaration) {
-    console.log(declaration.is({
-        type: 'Declaration',
-        name: /^border-/
-    }));
-});
-
-/*
-true
-false
-true
-true
-*/
-
-</code></pre>
-
-                <h3 id="api-children">.children()</h3>
-
-                <p>Returns the direct children of an object. You can provide a filter to return only the children matching with some conditions.</p>
-
-<pre><code>body {
-    color: blue;
+<pre><code>.foo {
+    colour: red;
 }
+</code></pre>
 
-@media (min-width: 200px) {
-    body {
-        color: red;
+<pre><code>
+var stylecow = require('stylecow');
+
+stylecow.addTask({
+    Declaration: {
+        colour: function (declaration) {
+            declaration.name = "color";
+        }
     }
-}
-@font-face {
-    font-family: 'myFont';
-    src: url(myfont.woff);
-}
-</code></pre>
-
-<pre><code>//Parse the code:
-var code = require('stylecow').parseFile('styles.css');
-
-//Get all children:
-var result = code.children();
-
-console.log(result.length); //3
-
-//Get only the objects of type "NestedAtRule"
-var result = code.children({
-    type: 'NestedAtRule'
 });
 
-console.log(result.length); //2
+//Execute the task
+var code = stylecow.convertFile('styles.css');
 
-//Get only the @media objects:
-var result = code.children({
-    type: 'NestedAtRule',
-    name: 'media'
-});
-
-console.log(result.length); //1
-</code></pre>
-
-                <h3 id="api-firstChild">.firstChild()</h3>
-
-                <p>It's like <code>.children()</code> but returns the first result found instead an array with all objects, and of course, you can provide a filter.</p>
-
-                <h3 id="api-haschild">.hasChild()</h3>
-
-                <p>Returns <code>true</code> if the object has at least one child matching with the filter. For example:</p>
-
-<pre><code>body {
-    border-radius: 3px;
-    font-size: 1em;
-}   
-</code></pre>          
-
-<pre><code>//Parse the code and get the first rule
-var code = require('stylecow').parseFile('styles.css');
-var rule = code.firstChild({type: 'Rule'});
-
-//Check if the rule has a "border-radius" statement
-rule.hasChild({type: 'Declaration', name: 'border-radius'}); //true
-
-//Check if the rule has a "color" statement
-rule.hasChild({type: 'Declaration', name: 'color'}); //false
-
-</code></pre>
-
-                <h3 id="api-search">.search()</h3>
-
-                <p>It's like <code>.children()</code> but search recursively in cascade and returns an array with all results found.</p>
-
-<pre><code>body {
-    color: blue;
-}
-p {
-    border-radius: 3px solid blue;
-    background: linear-gradient(blue, red);
-}
-</code></pre>
-
-<pre><code>//Parse the code
-var code = require('stylecow').parseFile('styles.css');
-
-//Search all keywords named "blue" and change to "green":
-code.search({
-    type: 'Keyword',
-    name: 'blue'
-}).forEach(function (keyword) {
-    keyword.name = 'green';
-});
-
-//Get the result code:
 console.log(code.toString());
 /*
-body {
-    color: green;
-}
-p {
-    border-radius: 3px solid green;
-    background: linear-gradient(green, red);
+.foo {
+    color: red;
 }
 */
 </code></pre>
 
-                <h3 id="api-searchfirst">.searchFirst()</h3>
-
-                <p>It's like <code>.search()</code> but returns the first element found.</p>
-
-                <h3 id="api-has">.has()</h3>
-
-                <p>Returns <code>true</code> if the object has at least one element matching with the filter. It's like <code>.hasChild()</code> but search recursively in all descendents</p>
-
-                <h3 id="api-next">.next()</h3>
-
-                <p>Returns the inmediate following sibling of the element. For example:</p>
-
-<pre><code>body {
-    color: blue;
-    font-family: Arial;
-    border: solid 1px red;
-}
-</code></pre>
-
-<pre><code>//Parse the code
-var code = require('stylecow').parseFile('styles.css');
-
-//Search the font-family declaration:
-var declaration = code.searchFirst({
-    type: 'Declaration',
-    name: 'font-family'
-});
-
-//Get the next sibling
-var next = declaration.next();
-
-console.log(next.toString()); // "border: solid 1px red"
-</code></pre>
-
-                <h3 id="api-prev">.prev()</h3>
-
-                <p>The same than <code>.next()</code> but returns the inmediate preceding sibling.</p>
-
-                <h3 id="api-parent">.parent()</h3>
-
-                <p>Returns the parent element. This function accepts a filter to return the first parent matching. For example:</p>
-
-<pre><code>body {
-    border: solid 1px red;
-}
-</code></pre>
-
-<pre><code>//Parse the code
-var code = require('stylecow').parseFile('styles.css');
-
-//Search the "red" keyword:
-var red = code.searchFirst({
-    type: 'Keyword',
-    name: 'red'
-});
-
-//Get the inmediate parent:
-console.log(red.parent()); // [Object Value]
-
-//Get the declaration parent:
-console.log(red.parent({type: 'Declaration'})); // [Object Declaration]
-
-//Get the declaration parent:
-console.log(red.parent({type: 'Rule'})); // [Object Rule]
-</code></pre>
-
-                <h3 id="api-clone">.clone()</h3>
-
-                <p>Creates a deep clone of the object (with all children)</p>
-
-<pre><code>body {
-    border-radius: 1px;
-}
-</code></pre>
-
-<pre><code>//Parse the code
-var code = require('stylecow').parseFile('styles.css');
-
-//Get the border-radius declaration:
-var declaration = code.searchFirst({type: 'Declaration', name: 'border-radius'});
-
-//Clone the declaration
-var cloned = declaration.clone();
-cloned.name = '-moz-border-radius';
-
-console.log(declaration.toString()); // border-radius: 1px;
-console.log(cloned.toString()); // -moz-border-radius: 1px;
-</code></pre>
-
-                <h3 id="api-clone">.cloneBefore()</h3>
-
-                <p>Creates a deep clone of the object and insert as preceding sibling.</p>
-
-<pre><code>body {
-    border-radius: 1px;
-}
-</code></pre>
-
-<pre><code>//Parse the code
-var code = require('stylecow').parseFile('styles.css');
-
-//Get the border-radius declaration:
-var declaration = code.searchFirst({type: 'Declaration', name: 'border-radius'});
-
-//Clone the declaration, insert before and change the name:
-declaration.cloneBefore().name = '-moz-border-radius';
-
-console.log(code.toString());
-
-/*
-body {
-    -moz-border-radius: 1px;
-    border-radius: 1px;
-}
-*/
-</code></pre>
-
-                <h3 id="api-cloneafter">.cloneAfter()</h3>
-
-                <p>It's like <code>.cloneBefore()</code> but insert the cloned element after.</p>
-
+                <p>In this task, we defined a function that is executed for each object of type "Declaration" named "colour" and changes the name to "color".</p>
+                <p>To know how to create your own tasks to manipulate the css as you like, <a href="api.html">here you can read the documentation</a></p>
             </div>
         </main>
     </body>
