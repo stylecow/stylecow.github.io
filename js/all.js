@@ -26,7 +26,7 @@ module.exports = function (code, plugins, support) {
 	return stylecow.convert(code).toString();
 }
 
-},{"stylecow":48}],1:[function(require,module,exports){
+},{"stylecow":50}],1:[function(require,module,exports){
 
 },{}],2:[function(require,module,exports){
 var color = {
@@ -517,7 +517,7 @@ var color = {
 	toRGBA: function (value, method) {
 		if ((typeof value === 'object') && value.type !== undefined) {
 			if (value.type === 'Function') {
-				return color.toRGBA(value.content, value.name);
+				return color.toRGBA(value.getValue(), value.name);
 			}
 			
 			return color.toRGBA(value.name);
@@ -639,10 +639,10 @@ module.exports = function (stylecow) {
 		},
 		"Function": {
 			rect: function (fn) {
-				var declaration = fn.ancestor('Declaration', 'clip');
+				var declaration = fn.parent({type: 'Declaration', name: 'clip'});
 
 				if (declaration) {
-					declaration.insertAfter('*clip: rect(' + fn.join(' ') + ')');
+					declaration.after('*clip: rect(' + fn.join(' ') + ')');
 				}
 			}
 		}
@@ -653,7 +653,6 @@ module.exports = function (stylecow) {
 module.exports = function (stylecow) {
 	
 	//Adds support of break-before, break-after, break-inside in webkit using the non-standard -webkit-column-break-
-
 	stylecow.addTask({
 		disable: {
 			chrome: 21.0,
@@ -662,8 +661,11 @@ module.exports = function (stylecow) {
 			ios: 7.0
 		},
 		Declaration: function (declaration) {
-			if (declaration.is(null, ['break-before', 'break-after', 'break-inside'], 'column')) {
-				declaration.insertBefore('-webkit-column-' + declaration.name + ':always');
+			if (declaration.is({
+				name: ['break-before', 'break-after', 'break-inside'],
+				value: 'column'
+			})) {
+				declaration.before('-webkit-column-' + declaration.name + ':always');
 			}
 		}
 	});
@@ -680,8 +682,10 @@ module.exports = function (stylecow) {
 		},
 		Declaration: {
 			float: function (declaration) {
-				if (declaration.is(null, null, ['left', 'right'])) {
-					declaration.insertAfter('_display: inline');
+				if (declaration.is({
+					value: ['left', 'right']
+				})) {
+					declaration.after('_display: inline');
 				}
 			}
 		}
@@ -699,8 +703,11 @@ module.exports = function (stylecow) {
 		},
 		Declaration: {
 			display: function (declaration) {
-				if (declaration.is(null, null, 'inline-block')) {
-					declaration.insertAfter('*zoom: 1').insertAfter('*display: inline');
+				if (declaration.is({
+					value: 'inline-block'
+				})) {
+					declaration.after(new stylecow.Declaration('*zoom')).setContent('1');
+					declaration.after(new stylecow.Declaration('*display')).setContent('inline');
 				}
 			}
 		}
@@ -718,7 +725,7 @@ module.exports = function (stylecow) {
 		},
 		Declaration: {
 			'min-height': function (declaration) {
-				declaration.insertBefore('_height:' + declaration.value);
+				declaration.before('_height:' + declaration.value);
 			}
 		}
 	});
@@ -735,7 +742,7 @@ module.exports = function (stylecow) {
 		},
 		Declaration: {
 			opacity: function (declaration) {
-				var rule = declaration.ancestor('Rule');
+				var rule = declaration.parent({type: 'Rule'});
 
 				if (rule) {
 					rule.addOldMsFilter('alpha(opacity=' + (parseFloat(declaration.value, 10) * 100) + ')');
@@ -781,10 +788,13 @@ module.exports = function (stylecow) {
 			explorer: 10.0
 		},
 		Declaration: function (declaration) {
-			if (declaration.value.indexOf('vmin') !== -1) {
+			if (declaration.getContent().join(', ').indexOf('vmin') !== -1) {
 				var clone = declaration.cloneBefore();
 
-				clone.search('Keyword', /([0-9\.]+)vmin/).forEach(function (keyword) {
+				clone.search({
+					type: 'Keyword',
+					name: /([0-9\.]+)vmin/
+				}).forEach(function (keyword) {
 					keyword.name = keyword.name.slice(0, -2);
 				});
 				clone.vendor = 'ms';
@@ -795,6 +805,7 @@ module.exports = function (stylecow) {
 
 },{}],12:[function(require,module,exports){
 module.exports = function (stylecow) {
+
 	stylecow.addTask([
 		//Adds -moz- vendor prefixes
 		{
@@ -802,11 +813,11 @@ module.exports = function (stylecow) {
 				firefox: 16.0
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^animation/)) {
+				if (declaration.is({name: /^animation/})) {
 					declaration.cloneBefore().name = '-moz-' + declaration.name;
 				}
 			},
-			AtRule: {
+			NestedAtRule: {
 				"keyframes": function (atrule) {
 					atrule.cloneBefore().name = '-moz-' + atrule.name;
 				}
@@ -819,11 +830,11 @@ module.exports = function (stylecow) {
 				opera: 12.1
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^animation/)) {
+				if (declaration.is({name: /^animation/})) {
 					declaration.cloneBefore().name = '-o-' + declaration.name;
 				}
 			},
-			AtRule: {
+			NestedAtRule: {
 				"keyframes": function (atrule) {
 					atrule.cloneBefore().name = '-o-' + atrule.name;
 				}
@@ -839,11 +850,11 @@ module.exports = function (stylecow) {
 				ios: false
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^animation/)) {
+				if (declaration.is({name: /^animation/})) {
 					declaration.cloneBefore().name = '-webkit-' + declaration.name;
 				}
 			},
-			AtRule: {
+			NestedAtRule: {
 				"keyframes": function (atrule) {
 					atrule.cloneBefore().name = '-webkit-' + atrule.name;
 				}
@@ -945,6 +956,7 @@ module.exports = function (stylecow) {
 
 },{}],15:[function(require,module,exports){
 module.exports = function (stylecow) {
+
 	stylecow.addTask([
 		//Fix old syntax in firefox <13 in border-radius
 		{
@@ -988,7 +1000,7 @@ module.exports = function (stylecow) {
 				android: 2.2
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^border-.*radius$/)) {
+				if (declaration.is({name: /^border-.*radius$/})) {
 					declaration.cloneBefore().name = '-webkit-' + declaration.name;
 				}
 			}
@@ -1003,7 +1015,7 @@ module.exports = function (stylecow) {
 				ios: false
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^border-(start|end|after|before)/)) {
+				if (declaration.is({name: /^border-(start|end|after|before)/})) {
 					declaration.cloneBefore().name = '-webkit-' + declaration.name;
 				}
 			}
@@ -1015,7 +1027,7 @@ module.exports = function (stylecow) {
 				firefox: false
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^border-(start|end)/)) {
+				if (declaration.is({name: /^border-(start|end)/})) {
 					declaration.cloneBefore().name = '-moz-' + declaration.name;
 				}
 			}
@@ -1027,7 +1039,7 @@ module.exports = function (stylecow) {
 				firefox: 15.0
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^border-image/)) {
+				if (declaration.is({name: /^border-image/})) {
 					declaration.cloneBefore().name = '-moz-' + declaration.name;
 				}
 			}
@@ -1039,7 +1051,7 @@ module.exports = function (stylecow) {
 				opera: 15.0
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^border-image/)) {
+				if (declaration.is({name: /^border-image/})) {
 					declaration.cloneBefore().name = '-o-' + declaration.name;
 				}
 			}
@@ -1053,7 +1065,7 @@ module.exports = function (stylecow) {
 				android: 4.4
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^border-image/)) {
+				if (declaration.is({name: /^border-image/})) {
 					declaration.cloneBefore().name = '-webkit-' + declaration.name;
 				}
 			}
@@ -1127,6 +1139,7 @@ module.exports = function (stylecow) {
 
 },{}],18:[function(require,module,exports){
 module.exports = function (stylecow) {
+
 	stylecow.addTask([
 		//Adds -moz- vendor prefix
 		{
@@ -1134,8 +1147,8 @@ module.exports = function (stylecow) {
 				firefox: 16.0
 			},
 			Declaration: function (declaration) {
-				if (declaration.has('Function', 'calc')) {
-					declaration.cloneBefore().search('Function', 'calc').forEach(function (fn) {
+				if (declaration.has({type: 'Function', name: 'calc'})) {
+					declaration.cloneBefore().search({type: 'Function', name: 'calc'}).forEach(function (fn) {
 						fn.name = '-moz-' + fn.name;
 					});
 				}
@@ -1150,8 +1163,8 @@ module.exports = function (stylecow) {
 				ios: 7.0
 			},
 			Declaration: function (declaration) {
-				if (declaration.has('Function', 'calc')) {
-					declaration.cloneBefore().search('Function', 'calc').forEach(function (fn) {
+				if (declaration.has({type: 'Function', name: 'calc'})) {
+					declaration.cloneBefore().search({type: 'Function', name: 'calc'}).forEach(function (fn) {
 						fn.name = '-webkit-' + fn.name;
 					});
 				}
@@ -1162,6 +1175,7 @@ module.exports = function (stylecow) {
 
 },{}],19:[function(require,module,exports){
 module.exports = function (stylecow) {
+
 	stylecow.addTask([
 		// Adds -moz- vendor prefixes
 		{
@@ -1169,7 +1183,7 @@ module.exports = function (stylecow) {
 				firefox: false
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^column/)) {
+				if (declaration.is({name: /^column/})) {
 					declaration.cloneBefore().name = '-moz-' + declaration.name;
 				}
 			}
@@ -1184,7 +1198,7 @@ module.exports = function (stylecow) {
 				ios: false
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^column/)) {
+				if (declaration.is({name: /^column/})) {
 					declaration.cloneBefore().name = '-webkit-' + declaration.name;
 				}
 			}
@@ -1202,8 +1216,8 @@ module.exports = function (stylecow) {
 			},
 			Declaration: {
 				'cursor': function (declaration) {
-					if (declaration.has('Keyword', ['zoom-in', 'zoom-out'])) {
-						declaration.cloneBefore().search('Keyword', ['zoom-in', 'zoom-out']).forEach(function (keyword) {
+					if (declaration.has({type: 'Keyword', name: ['zoom-in', 'zoom-out']})) {
+						declaration.cloneBefore().search({type: 'Keyword', name: ['zoom-in', 'zoom-out']}).forEach(function (keyword) {
 							keyword.name = '-moz-' + keyword;
 						});
 					}
@@ -1218,8 +1232,8 @@ module.exports = function (stylecow) {
 			},
 			Declaration: {
 				'cursor': function (declaration) {
-					if (declaration.has('Keyword', ['grab', 'grabbing'])) {
-						declaration.cloneBefore().search('Keyword', ['grab', 'grabbing']).forEach(function (keyword) {
+					if (declaration.has({type: 'Keyword', name: ['grab', 'grabbing']})) {
+						declaration.cloneBefore().search({type: 'Keyword', name: ['grab', 'grabbing']}).forEach(function (keyword) {
 							keyword.name = '-moz-' + keyword;
 						});
 					}
@@ -1237,8 +1251,8 @@ module.exports = function (stylecow) {
 			},
 			Declaration: {
 				'cursor': function (declaration) {
-					if (declaration.has('Keyword', ['zoom-in', 'zoom-out', 'grab', 'grabbing'])) {
-						declaration.cloneBefore().search('Keyword', ['zoom-in', 'zoom-out', 'grab', 'grabbing']).forEach(function (keyword) {
+					if (declaration.has({type: 'Keyword', name: ['zoom-in', 'zoom-out', 'grab', 'grabbing']})) {
+						declaration.cloneBefore().search({type: 'Keyword', name: ['zoom-in', 'zoom-out', 'grab', 'grabbing']}).forEach(function (keyword) {
 							keyword.name = '-webkit-' + keyword;
 						});
 					}
@@ -1257,7 +1271,7 @@ module.exports = function (stylecow) {
 		disable: {
 			firefox: false
 		},
-		AtRule: {
+		NestedAtRule: {
 			"document": function (atrule) {
 				atrule.cloneBefore().name = '-moz-document';
 			}
@@ -1267,6 +1281,7 @@ module.exports = function (stylecow) {
 
 },{}],22:[function(require,module,exports){
 module.exports = function (stylecow) {
+
 	stylecow.addTask([
 		//Adds -moz-full-screen vendor prefix
 		{
@@ -1274,8 +1289,8 @@ module.exports = function (stylecow) {
 				firefox: false
 			},
 			Rule: function (rule) {
-				if (rule.has('Keyword', ':fullscreen')) {
-					rule.cloneBefore().search('Keyword', ':fullscreen').forEach(function (keyword) {
+				if (rule.has({type: 'Keyword', name: ':fullscreen'})) {
+					rule.cloneBefore().search({type: 'Keyword', name: ':fullscreen'}).forEach(function (keyword) {
 						keyword.name = ':-moz-full-screen';
 					});
 				}
@@ -1291,8 +1306,8 @@ module.exports = function (stylecow) {
 				ios: false
 			},
 			Rule: function (rule) {
-				if (rule.has('Keyword', ':fullscreen')) {
-					rule.cloneBefore().search('Keyword', ':fullscreen').forEach(function (keyword) {
+				if (rule.has({type: 'Keyword', name: ':fullscreen'})) {
+					rule.cloneBefore().search({type: 'Keyword', name: ':fullscreen'}).forEach(function (keyword) {
 						keyword.name = ':-webkit-full-screen';
 					});
 				}
@@ -1305,8 +1320,8 @@ module.exports = function (stylecow) {
 				explorer: false
 			},
 			Rule: function (rule) {
-				if (rule.has('Keyword', ':fullscreen')) {
-					rule.cloneBefore().search('Keyword', ':fullscreen').forEach(function (keyword) {
+				if (rule.has({type: 'Keyword', name: ':fullscreen'})) {
+					rule.cloneBefore().search({type: 'Keyword', name: ':fullscreen'}).forEach(function (keyword) {
 						keyword.name = ':-ms-fullscreen';
 					});
 				}
@@ -1325,11 +1340,11 @@ module.exports = function (stylecow) {
 			explorer: false
 		},
 		Declaration: function (declaration) {
-			if (declaration.is(null, 'display', 'grid')) {
+			if (declaration.is({name: 'display', value: 'grid'})) {
 				return declaration.cloneBefore().value = '-ms-grid';
 			}
 
-			if (declaration.is(null, /^grid.*$/)) {
+			if (declaration.is({name: /^grid.*$/})) {
 				return declaration.cloneBefore().name = '-ms-' + declaration.name;
 			}
 		}
@@ -1347,8 +1362,8 @@ module.exports = function (stylecow) {
 		},
 		Declaration: {
 			display: function (declaration) {
-				if (declaration.is(null, null, 'inline-block')) {
-					declaration.insertAfter('display: -moz-inline-block');
+				if (declaration.is({value: 'inline-block'})) {
+					declaration.cloneAfter().setContent('-moz-inline-block');
 				}
 			}
 		}
@@ -1368,7 +1383,7 @@ module.exports = function (stylecow) {
 			ios: false
 		},
 		Declaration: function (declaration) {
-			if (declaration.is(null, /^mask/)) {
+			if (declaration.is({name: /^mask/})) {
 				declaration.cloneBefore().name = '-webkit-' + declaration.name;
 			}
 		}
@@ -1404,10 +1419,10 @@ module.exports = function (stylecow) {
 				firefox: false
 			},
 			RuleBefore: function (rule) {
-				if (rule.has('Keyword', ['::input-placeholder', '::selection'])) {
-					var clone = rule.cloneBefore();
+				var hasPseudoelement = rule.children({type: 'Selector'}).has({type: 'Keyword', name: ['::input-placeholder', '::selection']});
 
-					clone.search('Keyword', ['::input-placeholder', '::selection']).forEach(function (keyword) {
+				if (hasPseudoelement) {
+					rule.cloneBefore().children({type: 'Selector'}).search({type: 'Keyword', name: ['::input-placeholder', '::selection']}).forEach(function (keyword) {
 						keyword.name = (keyword.name === '::input-placeholder') ? '::-moz-placeholder' : '::-moz-selection';
 					});
 				}
@@ -1423,8 +1438,10 @@ module.exports = function (stylecow) {
 				ios: false
 			},
 			RuleBefore: function (rule) {
-				if (rule.has('Keyword', '::input-placeholder')) {
-					rule.cloneBefore().search('Keyword', '::input-placeholder').forEach(function (keyword) {
+				var hasPseudoelement = rule.children({type: 'Selector'}).has({type: 'Keyword', name: '::input-placeholder'});
+
+				if (hasPseudoelement) {
+					rule.cloneBefore().children({type: 'Selector'}).search({type: 'Keyword', name: '::input-placeholder'}).forEach(function (keyword) {
 						keyword.name = '::-webkit-input-placeholder';
 					});
 				}
@@ -1437,9 +1454,11 @@ module.exports = function (stylecow) {
 				explorer: false
 			},
 			RuleBefore: function (rule) {
-				if (rule.has('Keyword', '::input-placeholder')) {
-					rule.cloneBefore().search('Keyword', '::input-placeholder').forEach(function (keyword) {
-						keyword.name = ':-ms-input-placeholder';
+				var hasPseudoelement = rule.children({type: 'Selector'}).has({type: 'Keyword', name: '::input-placeholder'});
+
+				if (hasPseudoelement) {
+					rule.cloneBefore().children({type: 'Selector'}).search({type: 'Keyword', name: '::input-placeholder'}).forEach(function (keyword) {
+						keyword.name = '::-ms-input-placeholder';
 					});
 				}
 			}
@@ -1459,11 +1478,11 @@ module.exports = function (stylecow) {
 				ios: false
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, 'region-fragment')) {
+				if (declaration.is({name: 'region-fragment'})) {
 					return declaration.cloneBefore().name = '-webkit-region-fragment';
 				}
 
-				if (declaration.is(null, /^flow/)) {
+				if (declaration.is({name: /^flow/})) {
 					return declaration.cloneBefore().name = '-webkit-' + declaration.name;
 				}
 			}
@@ -1475,7 +1494,7 @@ module.exports = function (stylecow) {
 				explorer: false
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^flow/)) {
+				if (declaration.is({name: /^flow/})) {
 					return declaration.cloneBefore().name = '-ms-' + declaration.name;
 				}
 			}
@@ -1492,7 +1511,7 @@ module.exports = function (stylecow) {
 				firefox: false
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^(min-|max-)?(width|height)$/, 'fill-available')) {
+				if (declaration.is({name: /^(min-|max-)?(width|height)$/, value: 'fill-available'})) {
 					declaration.cloneBefore().value = '-moz-available';
 				}
 			}
@@ -1502,7 +1521,7 @@ module.exports = function (stylecow) {
 		{
 			disable: { firefox: false },
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^(min-|max-)?(width|height)$/, ['max-content', 'min-content', 'fit-content'])) {
+				if (declaration.is({name: /^(min-|max-)?(width|height)$/, value: ['max-content', 'min-content', 'fit-content']})) {
 					declaration.cloneBefore().value = '-moz-' + declaration.value;
 				}
 			}
@@ -1518,7 +1537,7 @@ module.exports = function (stylecow) {
 				ios: false
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^(min-|max-)?(width|height)$/, ['fill-available', 'max-content', 'min-content', 'fit-content'])) {
+				if (declaration.is({name: /^(min-|max-)?(width|height)$/, value: ['fill-available', 'max-content', 'min-content', 'fit-content']})) {
 					declaration.cloneBefore().value = '-webkit-' + declaration.value;
 				}
 			}
@@ -1541,7 +1560,7 @@ module.exports = function (stylecow) {
 		Declaration: {
 			position: function (declaration) {
 				if (declaration.value === 'sticky') {
-					declaration.insertBefore('position: -webkit-sticky');
+					declaration.cloneBefore().setContent('-webkit-sticky');
 				}
 			}
 		}
@@ -1557,7 +1576,7 @@ module.exports = function (stylecow) {
 				firefox: 16.0
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^(transform.*|perspective.*|backface-visibility)$/)) {
+				if (declaration.is({name: /^(transform.*|perspective.*|backface-visibility)$/})) {
 					declaration.cloneBefore().name = '-moz-' + declaration.name;
 				}
 			}
@@ -1572,7 +1591,7 @@ module.exports = function (stylecow) {
 				ios: false
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^(transform.*|perspective.*|backface-visibility)$/)) {
+				if (declaration.is({name: /^(transform.*|perspective.*|backface-visibility)$/})) {
 					declaration.cloneBefore().name = '-webkit-' + declaration.name;
 				}
 			}
@@ -1584,7 +1603,7 @@ module.exports = function (stylecow) {
 				12.1
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^transform/)) {
+				if (declaration.is({name: /^transform/})) {
 					declaration.cloneBefore().name = '-o-' + declaration.name;
 				}
 			}
@@ -1596,7 +1615,7 @@ module.exports = function (stylecow) {
 				explorer: 10.0
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^transform/)) {
+				if (declaration.is({name: /^transform/})) {
 					declaration.cloneBefore().name = '-ms-' + declaration.name;
 				}
 			}
@@ -1613,7 +1632,7 @@ module.exports = function (stylecow) {
 				firefox: 16.0
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^transition/) && !declaration.has(null, null, null, true)) {
+				if (declaration.is({name: /^transition/}) && !declaration.has({vendor: true})) {
 					declaration.cloneBefore().name = '-moz-' + declaration.name;
 				}
 			}
@@ -1627,7 +1646,7 @@ module.exports = function (stylecow) {
 				android: 4.4
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^transition/) && !declaration.has(null, null, null, true)) {
+				if (declaration.is({name: /^transition/}) && !declaration.has({vendor: true})) {
 					declaration.cloneBefore().name = '-webkit-' + declaration.name;
 				}
 			}
@@ -1639,7 +1658,7 @@ module.exports = function (stylecow) {
 				opera: 12.1
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^transition/) && !declaration.has(null, null, null, true)) {
+				if (declaration.is({name: /^transition/}) && !declaration.has({vendor: true})) {
 					declaration.cloneBefore().name = '-o-' + declaration.name;
 				}
 			}
@@ -1651,8 +1670,8 @@ module.exports = function (stylecow) {
 				firefox: 16.0
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, ['-moz-transition', '-moz-transition-property'])) {
-					declaration.search('Keyword', ['transform', 'transform-origin']).forEach(function (keyword) {
+				if (declaration.is({name: ['-moz-transition', '-moz-transition-property']})) {
+					declaration.search({type: 'Keyword', name: ['transform', 'transform-origin']}).forEach(function (keyword) {
 						keyword.name = '-moz-' + keyword.name;
 					});
 				}
@@ -1668,8 +1687,8 @@ module.exports = function (stylecow) {
 				ios: false
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, ['-webkit-transition', '-webkit-transition-property'])) {
-					declaration.search('Keyword', ['transform', 'transform-origin']).forEach(function (keyword) {
+				if (declaration.is({name: ['-webkit-transition', '-webkit-transition-property']})) {
+					declaration.search({type: 'Keyword', name: ['transform', 'transform-origin']}).forEach(function (keyword) {
 						keyword.name = '-webkit-' + keyword.name;
 					});
 				}
@@ -1682,8 +1701,8 @@ module.exports = function (stylecow) {
 				opera: 12.1
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, ['-o-transition', '-o-transition-property'])) {
-					declaration.search('Keyword', ['transform', 'transform-origin']).forEach(function (keyword) {
+				if (declaration.is({name: ['-o-transition', '-o-transition-property']})) {
+					declaration.search({type: 'Keyword', name: ['transform', 'transform-origin']}).forEach(function (keyword) {
 						keyword.name = '-o-' + keyword.name;
 					});
 				}
@@ -1696,8 +1715,8 @@ module.exports = function (stylecow) {
 				explorer: 10.0
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, ['transition', 'transition-property']) && declaration.has('Keyword', ['transform', 'transform-origin'])) {
-					declaration.cloneBefore().search('Keyword', ['transform', 'transform-origin']).forEach(function (keyword) {
+				if (declaration.is({name: ['transition', 'transition-property']}) && declaration.has({type: 'Keyword', name: ['transform', 'transform-origin']})) {
+					declaration.cloneBefore().search({type: 'Keyword', name: ['transform', 'transform-origin']}).forEach(function (keyword) {
 						keyword.name = '-ms-' + keyword.name;
 					});
 				}
@@ -1848,8 +1867,8 @@ module.exports = function (stylecow) {
 			"ruleColon": ": ",
 			"ruleEnd": ";",
 			"comments": "all", // (all|important|none)
-			"commentStart": "/* ",
-			"commentEnd": " */",
+			"commentStart": "/*",
+			"commentEnd": "*/",
 			"rulesetStart": " {\n",
 			"rulesetEnd": "\n}"
 		},
@@ -1885,7 +1904,24 @@ module.exports = function (stylecow) {
 
 })(require('./index'));
 
-},{"./index":48}],36:[function(require,module,exports){
+},{"./index":50}],36:[function(require,module,exports){
+(function (stylecow) {
+
+	stylecow.Argument = function () {
+		this.type = 'Argument';
+	};
+
+	stylecow.Argument.prototype = Object.create(stylecow.Base, {
+
+		toString: {
+			value: function () {
+				return this.join(' ');
+			}
+		}
+	});
+})(require('../index'));
+
+},{"../index":50}],37:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.AtRule = function (name) {
@@ -1893,46 +1929,127 @@ module.exports = function (stylecow) {
 		this.name = name;
 	};
 
-	stylecow.AtRule.create = function (string) {
-		return stylecow.Rule.create(string);
-	};
-
-	stylecow.AtRule.prototype = Object.create(stylecow.Rule.prototype, {
+	stylecow.AtRule.prototype = Object.create(stylecow.Base, {
 
 		name: {
 			get: function () {
 				return this._name;
 			},
 			set: function (name) {
-				var vendor = name.match(/^\-(\w+)\-/);
-				this.vendor = vendor ? vendor[0] : null;
+				name = name || '';
 
+				if (name[0] === '@') {
+					name = name.substr(1);
+				}
+
+				var vendor = name.match(/^@\-(\w+)\-/);
+				this.vendor = vendor ? vendor[0] : null;
 				this._name = name;
 			}
 		},
 
 		toString: {
 			value: function () {
-				var code = stylecow.Rule.prototype.toString.call(this);
-
-				return code ? ('@' + this.name + ' ' + code) : '';
+				return '@' + this._name + ' ' + this.join(' ') + ';';
 			}
 		},
 
 		toCode: {
 			value: function () {
-				var code = stylecow.Rule.prototype.toCode.call(this);
+				var value = this.map(function (child) {
+					return child.toCode();
+				}).join(stylecow.codeStyle.valueJoiner);
 
-				return code ? ('@' + this.name + ' ' + code) : '';
+				return value ? ('@' + this._name + ' ' + value + stylecow.codeStyle.ruleEnd) : '';
 			}
 		}
 	});
+
 })(require('../index'));
 
-},{"../index":48}],37:[function(require,module,exports){
+},{"../index":50}],38:[function(require,module,exports){
 (function (stylecow) {
+	var Collection = function () {};
 
-	stylecow.Base = Object.create(Array.prototype, {
+	Collection.prototype = Object.create(Array.prototype, {
+		children: {
+			value: function (match) {
+				var result = new Collection;
+
+				for (var i = 0, t = this.length; i < t; ++i) {
+					if (this[i].is(match)) {
+						result.push(this[i]);
+					}
+				};
+
+				return result;
+			}
+		},
+
+		firstChild: {
+			value: function (match) {
+				for (var i = 0, t = this.length; i < t; ++i) {
+					if (this[i].is(match)) {
+						return this[i];
+					}
+				};
+			}
+		},
+
+		hasChild: {
+			value: function (match) {
+				return this.some(function (child) {
+					return child.is(match);
+				});
+			}
+		},
+
+		search: {
+			value: function (match, result) {
+				result = result || new Collection;
+
+				for (var i = 0, t = this.length; i < t; i++) {
+					if (this[i].is(match)) {
+						result.push(this[i]);
+					} else {
+						this[i].search(match, result);
+					}
+				}
+
+				return result;
+			}
+		},
+
+		searchFirst: {
+			value: function (match) {
+				for (var i = 0, t = this.length; i < t; i++) {
+					if (this[i].is(match)) {
+						return this[i];
+					}
+					
+					var found = this[i].searchFirst(match);
+
+					if (found) {
+						return found;
+					}
+				}
+			}
+		},
+
+		has: {
+			value: function (match) {
+				for (var i = 0, t = this.length; i < t; i++) {
+					if (this[i].is(match) || this[i].has(match)) {
+						return true;
+					}
+				}
+
+				return false;
+			}
+		}
+	});
+
+	stylecow.Base = Object.create(Collection.prototype, {
 		executeTasks: {
 			value: function (tasks, vendor) {
 				if (vendor) {
@@ -1943,13 +2060,7 @@ module.exports = function (stylecow) {
 					vendor = this.vendor;
 				}
 
-				stylecow.utils.forEach(tasks[this.type + 'Before'], function (functions, name) {
-					if ((name === '*') || (name === this.name)) {
-						functions.forEach(function (fn) {
-							fn(this);
-						}, this);
-					}
-				}, this);
+				executeTasks(tasks[this.type + 'Before'], this);
 
 				var k = 0;
 
@@ -1966,13 +2077,7 @@ module.exports = function (stylecow) {
 					k = 0;
 				}
 
-				stylecow.utils.forEach(tasks[this.type], function (functions, name) {
-					if ((name === '*') || (name === this.name)) {
-						functions.forEach(function (fn) {
-							fn(this);
-						}, this);
-					}
-				}, this);
+				executeTasks(tasks[this.type], this);
 
 				this.executed = true;
 			}
@@ -1980,25 +2085,53 @@ module.exports = function (stylecow) {
 
 		clone: {
 			value: function () {
-				return stylecow[this.type].create(this.toString());
+				var clone = new stylecow[this.type](this.name);
+
+				this.forEach(function (child) {
+					clone.push(child.clone());
+				});
+
+				clone._data = this._data;
+
+				return clone;
+			}
+		},
+
+		cloneBefore: {
+			value: function () {
+				return this.before(this.clone());
+			}
+		},
+
+		cloneAfter: {
+			value: function () {
+				return this.after(this.clone());
 			}
 		},
 
 		is: {
-			value: function (type, name, value, vendor) {
-				if (type && !equals(this.type, type)) {
+			value: function (match) {
+				if (!match) {
+					return true;
+				}
+
+				if (match.type && !equals(this.type, match.type)) {
 					return false;
 				}
 
-				if (name && !equals(this.name, name)) {
+				if (match.name && !equals(this.name, match.name)) {
 					return false;
 				}
 
-				if (value && !equals(this.value, value)) {
+				if (match.value && !equals(this.value, match.value)) {
 					return false;
 				}
 
-				if (vendor && !equals(this.vendor, vendor)) {
+				if (match.vendor && !equals(this.vendor, match.vendor)) {
+					return false;
+				}
+
+				if (match.string && !equals(this.toString(), match.string)) {
 					return false;
 				}
 
@@ -2006,100 +2139,65 @@ module.exports = function (stylecow) {
 			}
 		},
 
-		children: {
-			value: function (type, name, value, vendor) {
-				return this.filter(function (child) {
-					return child.is(type, name, value, vendor);
-				});
-			}
-		},
-
-		hasChild: {
-			value: function (type, name, value, vendor) {
-				return this.some(function (child) {
-					return child.is(type, name, value, vendor);
-				});
-			}
-		},
-
-		search: {
-			value: function (type, name, value, vendor, result) {
-				result = result || [];
-
-				if (this.is(type, name, value,vendor)) {
-					result.push(this);
-				}
-
-				for (var i = 0, t = this.length; i < t; i++) {
-					this[i].search(type, name, value, vendor, result);
-				}
-
-				return result;
-			}
-		},
-
-		has: {
-			value: function (type, name, value, vendor) {
-				if (this.is(type, name, value, vendor)) {
-					return true;
-				}
-
-				for (var i = 0, t = this.length; i < t; i++) {
-					if (this[i].has(type, name, value, vendor)) {
-						return true;
+		parent: {
+			value: function (match) {
+				if (this._parent) {
+					if (!match || this._parent.is(match)) {
+						return this._parent;
 					}
-				}
 
-				return false;
-			}
-		},
-
-		ancestor: {
-			value: function (type, name, value, vendor) {
-				if (this.is(type, name, value, vendor)) {
-					return this;
-				}
-
-				if (this.parent) {
-					return this.parent.ancestor(type, name, value, vendor);
+					return this._parent.parent(match);
 				}
 			}
 		},
 
-		content: {
-			get: function () {
+		empty: {
+			value: function () {
+				this.splice(0);
+
+				return this;
+			}
+		},
+
+		setContent: {
+			value: function (content) {
+				this.splice(0);
+
+				if (content instanceof Array) {
+					content.forEach(function (child) {
+						stylecow.parse(child, this);
+					}, this);
+				} else {
+					stylecow.parse(content, this);
+				}
+
+				return this;
+			}
+		},
+
+		getContent: {
+			value: function () {
 				return this.map(function (child) {
 					return child.toString();
 				});
-			},
-			set: function (value) {
-				this.splice(0);
-
-				if (value instanceof Array) {
-					value.forEach(function (v) {
-						this.add(v);
-					}, this);
-				} else {
-					this.add(value);
-				}
 			}
 		},
 
 		getData: {
 			value: function (key) {
-				if (this._data && (key in this._data)) {
+				if (('_data' in this) && (key in this._data)) {
 					return this._data[key];
 				}
 
-				if (this.parent) {
-					return this.parent.getData(key);
+				if (this._parent) {
+					return this._parent.getData(key);
 				}
 			}
 		},
 
 		setData: {
 			value: function (key, value) {
-				if (!this._data) {
+				if (!('_data' in this)) {
 					this._data = {};
 				}
 
@@ -2109,95 +2207,112 @@ module.exports = function (stylecow) {
 			}
 		},
 
-		files: {
-			get: function () {
-				var files = {};
-
-				this.search()
-					.filter(function (child) {
-						return (child._data && child._data['sourceFile']);
-					})
-					.map(function (child) {
-						return child._data['sourceFile'];
-					})
-					.forEach(function (file) {
-						files[file] = null;
-					});
-
-				return Object.getOwnPropertyNames(files);
-			}
-		},
-
 		index: {
 			value: function () {
-				if (this.parent) {
-					return this.parent.indexOf(this);
+				if (this._parent) {
+					return this._parent.indexOf(this);
 				}
 
 				return -1;
 			}
 		},
 
-		add: {
-			value: function (child, index, after) {
-				if (typeof child !== 'object') {
-					child = this.parseChild(''+child);
+		push: {
+			value: function () {
+				prepareChildren(this, arguments, 0);
+
+				return Array.prototype.push.apply(this, arguments);
+			}
+		},
+
+		unshift: {
+			value: function () {
+				prepareChildren(this, arguments, 0);
+
+				return Array.prototype.unshift.apply(this, arguments);
+			}
+		},
+
+		splice: {
+			value: function () {
+				if (arguments.length > 2) {
+					prepareChildren(this, arguments, 2);
 				}
 
-				child.detach();
-				child.parent = this;
+				return Array.prototype.splice.apply(this, arguments);
+			}
+		},
 
-				if (index === undefined || (after && index === this.length)) {
+		next: {
+			value: function () {
+				var index = this.index();
+
+				if (index !== -1) {
+					return this._parent[index + 1];
+				}
+			}
+		},
+
+		prev: {
+			value: function () {
+				var index = this.index();
+
+				if (index > 0) {
+					return this._parent[index - 1];
+				}
+			}
+		},
+
+		add: {
+			value: function (child, index) {
+				if (typeof child === 'string') {
+					var root = new stylecow[this.type];
+					stylecow.parse(child, root);
+
+					if (root._parent) {
+						root = root._parent;
+					}
+
+					if (index === undefined) {
+						this.push.apply(this, root);
+					} else {
+						this.splice.apply(this, [index, 0].concat(root.slice(0)));
+					}
+
+					return root[0];
+				}
+
+				if (index === undefined || index > this.length) {
 					this.push(child);
 				} else {
-					this.splice(after ? index + 1 : index, 0, child);
+					this.splice(index, 0, child);
 				}
 
 				return child;
 			}
 		},
 
-		append: {
-			value: function (child) {
-				this.add(child);
-			}
-		},
-
-		prepend: {
-			value: function (child) {
-				this.add(child, 0);
-			}
-		},
-
-		insertBefore: {
+		before: {
 			value: function (child) {
 				var index = this.index();
 
 				if (index !== -1) {
-					return this.parent.add(child, index);
+					return this._parent.add(child, index);
 				}
 			}
 		},
 
-		insertAfter: {
+		after: {
 			value: function (child) {
 				var index = this.index();
 
 				if (index !== -1) {
-					return this.parent.add(child, index, true);
+					if (index === this.length) {
+						return this._parent.add(child);
+					}
+
+					return this._parent.add(child, index + 1);
 				}
-			}
-		},
-
-		cloneBefore: {
-			value: function () {
-				return this.insertBefore(this.clone());
-			}
-		},
-
-		cloneAfter: {
-			value: function () {
-				return this.insertAfter(this.clone());
 			}
 		},
 
@@ -2206,7 +2321,7 @@ module.exports = function (stylecow) {
 				var index = this.index();
 
 				if (index !== -1) {
-					var parent = this.parent;
+					var parent = this._parent;
 					this.remove();
 
 					return parent.add(child, index);
@@ -2215,30 +2330,22 @@ module.exports = function (stylecow) {
 		},
 
 		remove: {
-			value: function (propagate) {
-				if (!propagate) {
-					this.detach();
+			value: function () {
+				if (this._parent) {
+					var index = this.index();
+
+					if (index !== -1) {
+						this._parent.splice(index, 1);
+						this._parent = null;
+					}
 				}
 
 				this.forEach(function (child) {
-					child.remove(true);
+					child._parent = null;
+					child.remove();
 				});
 
-				this.parent = null;
 				this.splice(0);
-
-				return this;
-			}
-		},
-
-		detach: {
-			value: function () {
-				var index = this.index();
-
-				if (index !== -1) {
-					this.parent.splice(index, 1);
-					this.parent = null;
-				}
 
 				return this;
 			}
@@ -2250,6 +2357,20 @@ module.exports = function (stylecow) {
 			}
 		}
 	});
+
+	function prepareChildren (parent, children, from) {
+		for (var i = children.length - 1; i >= from; i--) {
+			if (children[i]._parent) {
+				var index = children[i].index();
+
+				if (index !== -1) {
+					children[i]._parent.splice(index, 1);
+				}
+			}
+
+			children[i]._parent = parent;
+		};
+	}
 
 	function equals (value, needle) {
 		if (needle === true) {
@@ -2271,103 +2392,109 @@ module.exports = function (stylecow) {
 		return true;
 	}
 
+	function executeTasks (tasks, element) {
+		if (!tasks) {
+			return;
+		}
+
+		var i, name = element.name;
+
+		if (tasks.hasOwnProperty('*')) {
+			for (i = tasks['*'].length - 1; i >= 0; i--) {
+				tasks['*'][i](element);
+			};
+		}
+
+		if (tasks.hasOwnProperty(name)) {
+			for (i = tasks[name].length - 1; i >= 0; i--) {
+				tasks[name][i](element);
+			};
+		}
+	}
+
 })(require('../index'));
 
-},{"../index":48}],38:[function(require,module,exports){
+},{"../index":50}],39:[function(require,module,exports){
 (function (stylecow) {
 
-	stylecow.Comment = function (text) {
+	stylecow.Comment = function (name) {
 		this.type = 'Comment';
-		this.text = text;
-	};
-
-	stylecow.Comment.create = function (string) {
-		var matches = string.match(/^\s*\/\*((.|\s)+)\*\/\s*$/m);
-
-		return new stylecow.Comment(matches[1]);
+		this.name = name;
 	};
 
 	stylecow.Comment.prototype = Object.create(stylecow.Base, {
-
-		text: {
+		name: {
 			get: function () {
-				return this._text;
+				return this._name;
 			},
-			set: function (value) {
-				value = value.trim();
+			set: function (name) {
+				name = name || '';
 
-				if (value[0] === '!') {
-					this.important = true;
-					value = value.substr(1).trim();
-				} else {
-					this.important = false;
-				}
-
-				this._text = value;
+				this.important = (name.trim()[0] === '!');
+				this._name = name;
 			}
 		},
 
 		toString: {
 			value: function () {
-				return '/* ' + (this.important ? '! ' : '') + this._text + ' */';
+				return '/* ' + this._name + ' */';
 			}
 		},
 
 		toCode: {
 			value: function () {
-				if (!this._text || stylecow.codeStyle.comments === 'none' || (stylecow.codeStyle.comments === 'important' && !this.important)) {
+				if (!this._name || stylecow.codeStyle.comments === 'none' || (stylecow.codeStyle.comments === 'important' && !this.important)) {
 					return '';
 				}
 
-				return stylecow.codeStyle.commentStart + (this.important ? '! ' : '') + this._text + stylecow.codeStyle.commentEnd;
+				return stylecow.codeStyle.commentStart + this._name + stylecow.codeStyle.commentEnd;
 			}
 		}
 	});
 })(require('../index'));
 
-},{"../index":48}],39:[function(require,module,exports){
+},{"../index":50}],40:[function(require,module,exports){
 (function (stylecow) {
 
-	stylecow.Declaration = function (name, value) {
-		this.type = 'Declaration';
+	stylecow.Condition = function (name) {
+		this.type = 'Condition';
 		this.name = name;
-		this.value = value;
 	};
 
-	stylecow.Declaration.create = function (string) {
-		var pieces = stylecow.utils.explodeTrim(':', string, 2);
+	stylecow.Condition.prototype = Object.create(stylecow.Base, {
 
-		if (pieces[1].substr(-1) === ';') {
-			pieces[1] = pieces[1].slice(0, -1);
+		toString: {
+			value: function () {
+				return this.name;
+			}
 		}
+	});
+})(require('../index'));
 
-		return new stylecow.Declaration(pieces[0], pieces[1]);
+},{"../index":50}],41:[function(require,module,exports){
+(function (stylecow) {
+
+	stylecow.Declaration = function (name) {
+		this.type = 'Declaration';
+		this.name = name;
 	};
 
 	stylecow.Declaration.prototype = Object.create(stylecow.Base, {
-
-		parseChild: {
-			value: function (string) {
-				var value = stylecow.Value.create(string);
-
-				if (value.length === 1) {
-					return value[0];
-				}
-
-				return value;
-			}
-		},
 
 		name: {
 			get: function () {
 				return this._name;
 			},
 			set: function (name) {
+				name = name || '';
+
 				if (name[0] === '*' || name[0] === '_') {
 					this.vendor = 'ms';
-				} else {
+				} else if (name[0] === '-') {
 					var vendor = name.match(/^\-(\w+)\-/);
 					this.vendor = vendor ? vendor[0] : null;
+				} else {
+					this.vendor = null;
 				}
 
 				this._name = name;
@@ -2376,10 +2503,10 @@ module.exports = function (stylecow) {
 
 		value: {
 			get: function () {
-				return this.join(',');
+				return this.join(', ');
 			},
 			set: function (value) {
-				this.content = stylecow.utils.explodeTrim(',', value);
+				this.setValue(value);
 			}
 		},
 
@@ -2405,43 +2532,35 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":48}],40:[function(require,module,exports){
+},{"../index":50}],42:[function(require,module,exports){
 (function (stylecow) {
 
-	stylecow.Function = function (name, args) {
+	stylecow.Function = function (name) {
 		this.type = 'Function';
 		this.name = name;
-		this.content = args;
-	};
-
-	stylecow.Function.create = function (string) {
-		var matches = string.match(/^([\w\.\:-]+)\((.*)\)$/);
-
-		return new stylecow.Function(matches[1], stylecow.utils.explodeTrim(',', matches[2]));
 	};
 
 	stylecow.Function.prototype = Object.create(stylecow.Base, {
-
-		parseChild: {
-			value: function (string) {
-				var value = stylecow.Value.create(string);
-
-				if (value.length === 1) {
-					return value[0];
-				}
-
-				return value;
-			}
-		},
 
 		name: {
 			get: function () {
 				return this._name;
 			},
 			set: function (name) {
+				name = name || '';
+
 				var vendor = name.match(/^([:]+)?\-(\w+)\-/);
 				this.vendor = vendor ? vendor[0] : null;
 				this._name = name;
+			}
+		},
+
+		value: {
+			get: function () {
+				return this.join(', ');
+			},
+			set: function (value) {
+				this.setValue(value);
 			}
 		},
 
@@ -2461,46 +2580,12 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":48}],41:[function(require,module,exports){
-(function (stylecow) {
-
-	stylecow.Import = function (url) {
-		this.type = 'Import';
-		this.url = url;
-	};
-
-	stylecow.Import.create = function (string) {
-		var matches = string.trim().match(/^\@import (url\()?['"]?([^'"\)]+)/);
-
-		return new stylecow.Import(matches[2]);
-	};
-
-	stylecow.Import.prototype = Object.create(stylecow.Base, {
-
-		toString: {
-			value: function () {
-				return '@import "' + this.url + '"';
-			}
-		},
-
-		toCode: {
-			value: function () {
-				return this.toString() + stylecow.codeStyle.ruleEnd;
-			}
-		}
-	});
-})(require('../index'));
-
-},{"../index":48}],42:[function(require,module,exports){
+},{"../index":50}],43:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Keyword = function (name) {
 		this.type = 'Keyword';
 		this.name = name;
-	};
-
-	stylecow.Keyword.create = function (string) {
-		return new stylecow.Keyword(string);
 	};
 
 	stylecow.Keyword.prototype = Object.create(stylecow.Base, {
@@ -2510,38 +2595,159 @@ module.exports = function (stylecow) {
 				return this._name;
 			},
 			set: function (name) {
-				var vendor = name.match(/^\-(\w+)\-/);
-				this.vendor = vendor ? vendor[0] : null;
+				name = name || '';
+
+				this.vendor = null;
+				this.quoted = false;
+
+				if (name[0] === '"' || name[0] === "'") {
+					this.quoted = true;
+					name = name.slice(1, -1);
+				} else if (name[0] === '-') {
+					var vendor = name.match(/^\-(\w+)\-/);
+					this.vendor = vendor ? vendor[0] : null;
+				}
+
 				this._name = name;
 			}
 		},
 
 		toString: {
 			value: function () {
-				return this.name;
+				return this.quoted ? ('"' + this.name + '"') : this.name;
 			}
 		}
 	});
 })(require('../index'));
 
-},{"../index":48}],43:[function(require,module,exports){
+},{"../index":50}],44:[function(require,module,exports){
+(function (stylecow) {
+
+	stylecow.NestedAtRule = function (name) {
+		this.type = 'NestedAtRule';
+		this.name = name;
+	};
+
+	stylecow.NestedAtRule.prototype = Object.create(stylecow.AtRule.prototype, {
+
+		toString: {
+			value: function () {
+				var stringIn = [];
+				var stringOut = [];
+				var conditions = [];
+				var selectors = [];
+
+				this.forEach(function (child) {
+					var string = child.toString();
+
+					if (string) {
+						if (child.type === 'Selector') {
+							selectors.push(child);
+						} else if (child.type === 'Condition') {
+							conditions.push(child);
+						} else if (child.type === 'Value') {
+							stringOut.push(child);
+						} else {
+							stringIn.push(child);
+						}
+					}
+				});
+
+				if (selectors.length) {
+					stringOut.push(selectors.join(', '));
+				}
+
+				if (conditions.length) {
+					stringOut.push(conditions.join(' '));
+				}
+
+				stringOut = stringOut.join(' ');
+
+				if (stringOut) {
+					stringOut += ' ';
+				}
+
+				stringIn = "\t" + stringIn.join("\n").replace(/\n/g, '\n' + "\t");
+
+				return '@' + this._name + ' ' + stringOut + "{\n" + stringIn + "\n}";
+			}
+		},
+
+		toCode: {
+			value: function () {
+				var stringIn = [];
+				var stringOut = [];
+				var conditions = [];
+				var selectors = [];
+
+				this.forEach(function (child) {
+					var string = child.toCode();
+
+					if (string) {
+						if (child.type === 'Selector') {
+							selectors.push(child);
+						} else if (child.type === 'Condition') {
+							conditions.push(child);
+						} else if (child.type === 'Value') {
+							stringOut.push(child);
+						} else {
+							stringIn.push(child);
+						}
+					}
+				});
+
+				if (!stringIn.length) {
+					return '';
+				}
+
+				if (selectors.length) {
+					stringOut.push(selectors.join(stylecow.codeStyle.selectorJoiner));
+				}
+
+				if (conditions.length) {
+					stringOut.push(conditions.join(' '));
+				}
+
+				stringIn = arrayUnique(stringIn).join(stylecow.codeStyle.linebreak);
+				stringOut = stringOut.join(' ');
+
+				if (stringOut) {
+					stringOut = ' ' +  stringOut;
+				}
+
+				if (stylecow.codeStyle.indent) {
+					stringIn = stylecow.codeStyle.indent + stringIn.replace(/\n/g, '\n' + stylecow.codeStyle.indent);
+				}
+
+				return '@' + this._name + stringOut + stylecow.codeStyle.rulesetStart + stringIn + stylecow.codeStyle.rulesetEnd;
+			}
+		}
+	});
+
+	function arrayUnique (array) {
+		var i, k, a = [];
+
+		for (i = array.length - 1; i >= 0; i--) {
+			k = a.indexOf(array[i]);
+
+			if (k === -1) {
+				a.unshift(array[i]);
+			}
+		}
+
+		return a;
+	}
+
+})(require('../index'));
+
+},{"../index":50}],45:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Root = function () {
 		this.type = 'Root';
 	};
 
-	stylecow.Root.create = function (string) {
-		return stylecow.utils.parseCode(string, new stylecow.Root());
-	};
-
 	stylecow.Root.prototype = Object.create(stylecow.Base, {
-
-		parseChild: {
-			value: function (string) {
-				return stylecow.utils.parseCode(string)[0];
-			}
-		},
 
 		toString: {
 			value: function () {
@@ -2565,52 +2771,30 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":48}],44:[function(require,module,exports){
+},{"../index":50}],46:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Rule = function () {
 		this.type = 'Rule';
 	};
 
-	stylecow.Rule.create = function (string) {
-		var root = stylecow.utils.parseCode(string);
-
-		if (!root.length) {
-			return new stylecow.Rule();
-		}
-
-		return root[0];
-	};
-
 	stylecow.Rule.prototype = Object.create(stylecow.Root.prototype, {
-
-		selector: {
-			get: function () {
-				return this.children('Selector').join(',');
-			},
-			set: function (selectors) {
-				this.children('Selector').forEach(function (child) {
-					child.remove();
-				});
-
-				stylecow.utils.explodeTrim(',', selectors).forEach(function (selector, index) {
-					this.add(stylecow.Selector.create(selector), index);
-				}, this);
-			}
-		},
 
 		addOldMsFilter: {
 			value: function (filter) {
-				var declaration = this.children('Declaration', '-ms-filter').pop();
+				var declaration = this.children({type: 'Declaration', name: '-ms-filter'}).pop();
+
+				var value = new stylecow.Value;
+				value.add(new stylecow.Keyword(filter));
 
 				if (declaration) {
 					if (declaration.value === 'none') {
-						declaration.value = filter;
-					} else if (declaration.content.indexOf(filter) === -1) {
-						declaration.append(filter);
+						declaration.empty().push(value);
+					} else if (!declaration.search({type: 'Keyword', name: filter}).length) {
+						declaration.push(value);
 					}
 				} else {
-					declaration = this.add(stylecow.Declaration.create('-ms-filter:' + filter));
+					this.add(new stylecow.Declaration('-ms-filter')).add(value);
 				}
 			}
 		},
@@ -2624,7 +2808,7 @@ module.exports = function (stylecow) {
 					var string = child.toString();
 
 					if (string) {
-						if (child.is('Selector')) {
+						if (child.is({type: 'Selector'})) {
 							selectors.push(child);
 						} else {
 							declarations.push(child);
@@ -2647,7 +2831,7 @@ module.exports = function (stylecow) {
 					var string = child.toCode();
 
 					if (string) {
-						if (child.is('Selector')) {
+						if (child.type === 'Selector') {
 							selectors.push(string);
 						} else {
 							declarations.push(string);
@@ -2655,8 +2839,8 @@ module.exports = function (stylecow) {
 					}
 				});
 
-				declarations = stylecow.utils.arrayUnique(declarations);
-				selectors = stylecow.utils.arrayUnique(selectors);
+				declarations = arrayUnique(declarations);
+				selectors = arrayUnique(selectors);
 
 				if (!declarations.length) {
 					return '';
@@ -2672,44 +2856,34 @@ module.exports = function (stylecow) {
 			}
 		}
 	});
+
+	function arrayUnique (array) {
+		var i, k, a = [];
+
+		for (i = array.length - 1; i >= 0; i--) {
+			k = a.indexOf(array[i]);
+
+			if (k === -1) {
+				a.unshift(array[i]);
+			}
+		}
+
+		return a;
+	}
+
 })(require('../index'));
 
-},{"../index":48}],45:[function(require,module,exports){
+},{"../index":50}],47:[function(require,module,exports){
 (function (stylecow) {
 
-	stylecow.Selector = function (name) {
+	stylecow.Selector = function () {
 		this.type = 'Selector';
-		this.name = name;
-	};
-
-	stylecow.Selector.create = function (string) {
-		return new stylecow.Selector(string);
 	};
 
 	stylecow.Selector.prototype = Object.create(stylecow.Base, {
-
-		parseChild: {
-			value: function (string) {
-				if (/\w\(/.test(string)) {
-					return stylecow.Function.create(string);
-				}
-
-				return stylecow.Keyword.create(string);
-			}
-		},
-
-		name: {
-			get: function () {
-				return this.join('');
-			},
-			set: function (name) {
-				this.content = stylecow.utils.parseSelector(name);
-			}
-		},
-
 		toString: {
 			value: function () {
-				return this.name;
+				return this.join('');
 			}
 		},
 
@@ -2723,36 +2897,18 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":48}],46:[function(require,module,exports){
+},{"../index":50}],48:[function(require,module,exports){
 (function (stylecow) {
 
-	stylecow.Value = function (name) {
+	stylecow.Value = function () {
 		this.type = 'Value';
-		this.name = name;
-	};
-
-	stylecow.Value.create = function (string) {
-		return new stylecow.Value(string);
 	};
 
 	stylecow.Value.prototype = Object.create(stylecow.Base, {
 
-		parseChild: {
-			value: function (string) {
-				if (/^[\w\.-]+\(/.test(string)) {
-					return stylecow.Function.create(string);
-				}
-
-				return stylecow.Keyword.create(string);
-			}
-		},
-
 		name: {
 			get: function () {
 				return this.join(' ');
-			},
-			set: function (name) {
-				this.content = stylecow.utils.explodeTrim(' ', name);
 			}
 		},
 
@@ -2764,7 +2920,7 @@ module.exports = function (stylecow) {
 	});
 })(require('../index'));
 
-},{"../index":48}],47:[function(require,module,exports){
+},{"../index":50}],49:[function(require,module,exports){
 (function (stylecow) {
 
 	stylecow.Error = function (message, data, prevError) {
@@ -2796,9 +2952,11 @@ module.exports = function (stylecow) {
 		toString: function () {
 			var string = this.message;
 
-			stylecow.utils.forEach(this.data, function (value, key) {
-				string += '\n' + key + ': ' + value;
-			});
+			for (var key in this.data) {
+				if (this.data.hasOwnProperty(key)) {
+					string += '\n' + key + ': ' + this.data[key];
+				}
+			}
 
 			return string;
 		},
@@ -2821,26 +2979,28 @@ module.exports = function (stylecow) {
 	};
 })(require('./index'));
 
-},{"./index":48}],48:[function(require,module,exports){
+},{"./index":50}],50:[function(require,module,exports){
 (function (stylecow) {
 	var fs = require('fs');
 
 	//CSS elements
 	require('./css/base');
+	require('./css/argument');
+	require('./css/atrule');
 	require('./css/comment');
-	require('./css/import');
-	require('./css/function');
-	require('./css/root');
+	require('./css/condition');
 	require('./css/declaration');
+	require('./css/function');
 	require('./css/keyword');
-	require('./css/value');
-	require('./css/rule');
+	require('./css/nested-atrule');
 	require('./css/selector');
-	require('./css/at-rule');
+	require('./css/root');
+	require('./css/rule');
+	require('./css/value');
 
 	//Utils
 	require('./error');
-	require('./utils');
+	require('./parser');
 	require('./config');
 
 
@@ -2853,11 +3013,11 @@ module.exports = function (stylecow) {
 
 	//Create from code string
 	stylecow.create = function (code) {
-		try {
-			return stylecow.Root.create(code);
-		} catch (error) {
-			return error.getFirstError().toCode();
-		}
+		return stylecow.parse(code);
+		//try {
+		//} catch (error) {
+		//	return error.getFirstError().toCode();
+		//}
 	};
 
 
@@ -2873,30 +3033,36 @@ module.exports = function (stylecow) {
 			return task.forEach(stylecow.addTask);
 		}
 
-		if (stylecow.utils.needFix(stylecow.support, task.disable)) {
+		if (needFix(stylecow.support, task.disable)) {
 			var name, val, k;
 
-			stylecow.utils.forEach(task, function (val, name) {
+			for (name in task) {
 				if (name === 'disable') {
-					return;
+					continue;
 				}
 
-				if (val instanceof Function) {
-					val = {'*': val};
-				}
+				if (task.hasOwnProperty(name)) {
+					val = task[name];
 
-				if (!stylecow.tasks[name]) {
-					stylecow.tasks[name] = {};
-				}
-
-				stylecow.utils.forEach(val, function (v, k) {
-					if (!stylecow.tasks[name][k]) {
-						stylecow.tasks[name][k] = [];
+					if (val instanceof Function) {
+						val = {'*': val};
 					}
 
-					stylecow.tasks[name][k].push(v);
-				});
-			});
+					if (!stylecow.tasks[name]) {
+						stylecow.tasks[name] = {};
+					}
+
+					for (k in val) {
+						if (val.hasOwnProperty(k)) {
+							if (!stylecow.tasks[name][k]) {
+								stylecow.tasks[name][k] = [];
+							}
+
+							stylecow.tasks[name][k].push(val[k]);
+						}
+					}
+				}
+			}
 		}
 	};
 
@@ -2908,7 +3074,11 @@ module.exports = function (stylecow) {
 		stylecow.tasks = {};
 
 		config.plugins.forEach(function (name) {
-			require(stylecow.pluginPrefix + name)(stylecow);
+			if (name[0] === '.' || name[0] === '/') {
+				require(name)(stylecow);
+			} else {
+				require(stylecow.pluginPrefix + name)(stylecow);
+			}
 		});
 	};
 
@@ -2933,629 +3103,664 @@ module.exports = function (stylecow) {
 	};
 
 
-})(require('./index'));
+	function needFix (minSupport, disablePlugin) {
+		if (!disablePlugin || !minSupport) {
+			return true;
+		}
 
-},{"./config":35,"./css/at-rule":36,"./css/base":37,"./css/comment":38,"./css/declaration":39,"./css/function":40,"./css/import":41,"./css/keyword":42,"./css/root":43,"./css/rule":44,"./css/selector":45,"./css/value":46,"./error":47,"./index":48,"./utils":49,"fs":1}],49:[function(require,module,exports){
-(function (stylecow) {
-
-	stylecow.utils = {
-		forEach: function (items, callback, self) {
-			if (!items) {
-				return;
+		for (var browser in disablePlugin) {
+			if (minSupport[browser] === false) {
+				continue;
 			}
 
-			self = self || this;
-
-			for (var k in items) {
-				if (items.hasOwnProperty(k)) {
-					callback.call(self, items[k], k);
-				}
-			}
-		},
-
-		needFix: function (minSupport, disablePlugin) {
-			if (!disablePlugin || !minSupport) {
+			if (disablePlugin[browser] === false || minSupport[browser] < disablePlugin[browser]) {
 				return true;
 			}
-
-			for (var browser in disablePlugin) {
-				if (minSupport[browser] === false) {
-					continue;
-				}
-
-				if (disablePlugin[browser] === false || minSupport[browser] < disablePlugin[browser]) {
-					return true;
-				}
-			}
-
-			return false;
-		},
-
-		explode: function (delimiter, string, limit) {
-			if (!string) {
-				return [];
-			}
-
-			if (!(delimiter instanceof Function)) {
-				var stringDelimiter = delimiter;
-
-				delimiter = function (buffer, currChar, array) {
-					if (currChar === stringDelimiter) {
-						array.push(buffer);
-						return true;
-					}
-				};
-			}
-
-			var col = 0,
-				length = string.length,
-				currChar = null,
-				previousChar = null,
-				nextChar = string[col],
-				buffer = '',
-				status = [],
-				array = [];
-
-			while (col < length) {
-				previousChar = currChar;
-				currChar = nextChar;
-				col ++;
-				nextChar = (col === length) ? null : string[col];
-
-				if (!status.length && delimiter(buffer, currChar, array)) {
-					buffer = '';
-
-					if (array.length === limit -1) {
-						array.push(string.substr(col));
-						break;
-					}
-
-					continue;
-				}
-
-				buffer += currChar;
-
-				switch (currChar) {
-					case '"':
-						switch (status[0]) {
-							case 'simpleQuote':
-							case 'comment':
-								break;
-
-							case 'doubleQuote':
-								if (previousChar !== '\\') {
-									status.shift();
-								}
-								break;
-
-							default:
-								status.unshift('doubleQuote');
-						}
-						break;
-
-					case "'":
-						switch (status[0]) {
-							case 'doubleQuote':
-							case 'comment':
-								break;
-
-							case 'simpleQuote':
-								if (previousChar !== '\\') {
-									status.shift();
-								}
-								break;
-
-							default:
-								status.unshift('simpleQuote');
-						}
-						break;
-
-					case '(':
-						switch (status[0]) {
-							case 'simpleQuote':
-							case 'doubleQuote':
-							case 'comment':
-								break;
-
-							default:
-								status.unshift('parenthesis');
-						}
-						break;
-
-					case ')':
-						switch (status[0]) {
-							case 'parenthesis':
-								status.shift();
-								break;
-						}
-						break;
-
-					case '{':
-						switch (status[0]) {
-							case 'simpleQuote':
-							case 'doubleQuote':
-							case 'comment':
-								break;
-
-							default:
-								status.unshift('brackets');
-						}
-						break;
-
-					case '}':
-						switch (status[0]) {
-							case 'brackets':
-								status.shift();
-								break;
-						}
-						break;
-
-					case ';':
-						switch (status[0]) {
-							case 'simpleQuote':
-							case 'doubleQuote':
-							case 'comment':
-								break;
-						}
-						break;
-
-					case '/':
-						if (status[0] !== 'comment') {
-							if (nextChar === '*') {
-								status.unshift('comment');
-
-								if (string[col+1] === '/') {
-									col++;
-								}
-							}
-						} else if (previousChar === '*') {
-							status.shift();
-						}
-						break;
-				}
-			}
-
-			if (buffer) {
-				array.push(buffer);
-			}
-
-			return array;
-		},
-
-		explodeTrim: function (delimiter, string, limit) {
-			return stylecow.utils.explode(delimiter, string, limit)
-				.map(function (value) {
-					return value.trim();
-				})
-				.filter(function (value) {
-					return value ? true : false;
-				});
-		},
-
-		arrayUnique: function (array) {
-			var i, k, a = [];
-
-			for (i = array.length - 1; i >= 0; i--) {
-				k = a.indexOf(array[i]);
-
-				if (k === -1) {
-					a.unshift(array[i]);
-				}
-			}
-
-			return a;
-		},
-
-		parseCode: function (code, parent) {
-			if (!parent) {
-				parent = new stylecow.Root();
-			}
-
-			var child = parent, status = ['root'], buffer = '';
-
-			code = code.split('\n');
-			code.unshift('');
-
-			for (var line = 0, totalLines = code.length; line < totalLines; line++) {
-				if (status[0] === 'comment') {
-					code[line] += '\n';
-				}
-
-				var stringLine = code[line],
-					col = 0,
-					length = stringLine.length,
-					currChar = null,
-					previousChar = null,
-					nextChar = stringLine[col],
-					newChild;
-
-				while (col < length) {
-					previousChar = currChar;
-					currChar = nextChar;
-					col ++;
-					nextChar = (col === length) ? null : stringLine[col];
-
-					buffer += currChar;
-
-					switch (currChar) {
-						case '"':
-							switch (status[0]) {
-								case 'simpleQuote':
-								case 'comment':
-									break;
-
-								case 'doubleQuote':
-									if (previousChar !== '\\') {
-										status.shift();
-									}
-									break;
-
-								default:
-									status.unshift('doubleQuote');
-							}
-							break;
-
-						case "'":
-							switch (status[0]) {
-								case 'doubleQuote':
-								case 'comment':
-									break;
-
-								case 'simpleQuote':
-									if (previousChar !== '\\') {
-										status.shift();
-									}
-									break;
-
-								default:
-									status.unshift('simpleQuote');
-							}
-							break;
-
-						case '(':
-							switch (status[0]) {
-								case 'simpleQuote':
-								case 'doubleQuote':
-								case 'comment':
-									break;
-
-								default:
-									status.unshift('parenthesis');
-							}
-							break;
-
-						case ')':
-							switch (status[0]) {
-								case 'parenthesis':
-									status.shift();
-									break;
-							}
-							break;
-
-						case '{':
-							switch (status[0]) {
-								case 'root':
-								case 'selector':
-								case 'rules':
-									var matches = buffer.trim().match(/^@([^\s]+)\s(.*)$/m);
-
-									try {
-										if (matches) {
-											newChild = new stylecow.AtRule(matches[1]);
-											buffer = matches[2];
-										} else {
-											newChild = new stylecow.Rule();
-										}
-
-										child = child.add(newChild).setData('sourceColumn', col).setData('sourceLine', line);
-										child.selector = buffer.slice(0, -1);
-									} catch (error) {
-										throw new stylecow.Error('Error parsing CSS code', {
-											code: buffer,
-											column: col,
-											line: line
-										}, error);
-									}
-
-									buffer = '';
-									status.unshift('rules');
-									break;
-							}
-							break;
-
-						case '}':
-							switch (status[0]) {
-								case 'rules':
-									buffer = buffer.slice(0, -1);
-
-									if (buffer.trim()) {
-										try {
-											child.add(buffer).setData('sourceColumn', col).setData('sourceLine', line);
-										} catch (error) {
-											throw new stylecow.Error('Error parsing CSS rule', {
-												code: buffer,
-												column: col,
-												line: line
-											}, error);
-										}
-									}
-
-									buffer = '';
-									status.shift();
-									child = child.parent;
-									break;
-							}
-							break;
-
-						case ';':
-							switch (status[0]) {
-								case 'root':
-								case 'selector':
-
-									if (buffer.indexOf('@import') !== -1) {
-										try {
-											newChild = stylecow.Import.create(buffer);
-										} catch (error) {
-											throw new stylecow.Error('Error parsing CSS @import rule', {
-												code: buffer,
-												column: col,
-												line: line
-											}, error);
-										}
-									} else {
-										try {
-											newChild = stylecow.Declaration.create(buffer);
-										} catch (error) {
-											throw new stylecow.Error('Error parsing CSS declaration', {
-												code: buffer,
-												column: col,
-												line: line
-											}, error);
-										}
-									}
-
-									newChild.setData('sourceColumn', col).setData('sourceLine', line);
-
-									buffer = '';
-
-									child.add(newChild);
-									break;
-
-								case 'rules':
-									try {
-										child.add(buffer.slice(0, -1)).setData('sourceColumn', col).setData('sourceLine', line);
-									} catch (error) {
-										throw new stylecow.Error('Error parsing CSS rule', {
-											code: buffer,
-											column: col,
-											line: line
-										}, error);
-									}
-									buffer = '';
-									break;
-							}
-							break;
-
-						case '/':
-							if (status[0] !== 'comment') {
-								if (nextChar === '*') {
-									status.unshift('comment');
-
-									var nextCol = col+1;
-									var nextNextChar = (nextCol === length) ? null : stringLine[nextCol];
-
-									if (nextNextChar === '/') {
-										col++;
-									}
-								}
-							} else if (previousChar === '*') {
-								try {
-									child.add(stylecow.Comment.create(buffer)).setData('sourceColumn', col).setData('sourceLine', line);
-								} catch (error) {
-									throw new stylecow.Error('Error parsing CSS comment', {
-										code: buffer,
-										column: col,
-										line: line
-									}, error);
-								}
-								buffer = '';
-								status.shift();
-							}
-							break;
-
-						default:
-							if (!status.length) {
-								status = ['root'];
-							}
-					}
-				}
-			}
-
-			if (buffer.trim() && (status[0] === 'root')) {
-				try {
-					child.add(stylecow.Declaration.create(buffer));
-				} catch (error) {
-					throw new stylecow.Error('Error parsing CSS declaration', {
-						code: buffer,
-						column: col,
-						line: line
-					}, error);
-				}
-			}
-
-			return parent;
-		},
-
-		parseSelector: function (code) {
-			if (!code) {
-				return [];
-			}
-
-			var length = code.length,
-				col = 0,
-				pieces = [],
-				status = [],
-				buffer = '',
-				previousChar = null,
-				currChar = null;
-
-			while (col < length) {
-				previousChar = currChar;
-				currChar = code[col];
-				col++;
-
-				switch (currChar) {
-					case '(':
-						if (status[0] !== 'quote') {
-							status.unshift('parenthesis');
-						}
-
-						buffer += currChar;
-						break;
-
-					case ')':
-						buffer += currChar;
-
-						if (status[0] === 'parenthesis') {
-							status.shift();
-							pieces.push(buffer);
-							buffer = '';
-						}
-						break;
-
-					case '"':
-						if (status[0] === 'quote') {
-							status.shift();
-						} else {
-							status.unshift('quote');
-						}
-
-						buffer += currChar;
-						break;
-
-					case ' ':
-						switch (status[0]) {
-							case 'quote':
-							case 'parenthesis':
-								buffer += currChar;
-								break;
-
-							case 'space':
-							case 'relation':
-								break;
-
-							default:
-								status.unshift('space');
-
-								if (buffer) {
-									pieces.push(buffer);
-									buffer = '';
-								}
-
-								buffer += currChar;
-						}
-						break;
-
-					case '>':
-					case '+':
-					case '~':
-						switch (status[0]) {
-							case 'quote':
-							case 'parenthesis':
-								buffer += currChar;
-								break;
-
-							case 'space':
-								status[0] = 'relation';
-								buffer = currChar;
-								break;
-
-							default:
-								status.unshift('relation');
-								buffer += currChar;
-
-						}
-						break;
-
-					case '.':
-					case '#':
-						switch (status[0]) {
-							case 'quote':
-							case 'parenthesis':
-								break;
-
-							case 'space':
-							case 'relation':
-								if (currChar !== ' ' && buffer) {
-									pieces.push(buffer);
-									status.shift();
-									buffer = '';
-								}
-								break;
-
-							default:
-								if (buffer) {
-									pieces.push(buffer);
-									buffer = '';
-								}
-
-						}
-
-						buffer += currChar;
-						break;
-
-					case ':':
-						switch (status[0]) {
-							case 'quote':
-							case 'parenthesis':
-								break;
-
-							case 'space':
-							case 'relation':
-								if (currChar !== ' ' && buffer) {
-									pieces.push(buffer);
-									status.shift();
-									buffer = '';
-								}
-								break;
-
-							default:
-								if (previousChar !== ':' && buffer) {
-									pieces.push(buffer);
-									buffer = '';
-								}
-						}
-
-						buffer += currChar;
-						break;
-
-					default:
-						switch (status[0]) {
-							case 'space':
-							case 'relation':
-								if (currChar !== ' ' && buffer) {
-									pieces.push(buffer);
-									status.shift();
-									buffer = '';
-								}
-								break;
-						}
-
-						buffer += currChar;
-				}
-			}
-
-			if (buffer) {
-				pieces.push(buffer);
-			}
-
-			return pieces;
 		}
-	};
+
+		return false;
+	}
 
 })(require('./index'));
 
-},{"./index":48}],"stylecow-plugin-color":[function(require,module,exports){
+},{"./config":35,"./css/argument":36,"./css/atrule":37,"./css/base":38,"./css/comment":39,"./css/condition":40,"./css/declaration":41,"./css/function":42,"./css/keyword":43,"./css/nested-atrule":44,"./css/root":45,"./css/rule":46,"./css/selector":47,"./css/value":48,"./error":49,"./index":50,"./parser":51,"fs":1}],51:[function(require,module,exports){
+(function (stylecow) {
+    var collapsedSpaces = [' ', '\t', '\n', '\r'];
+    var collapsedSelector = collapsedSpaces.concat(['>', '~', '+', ',', '{']);
+    var collapsedValue = collapsedSpaces.concat([',']);
+
+    var keyChars = ['{', '}', ':', ' ', '*', '.', '[', '#', '+', '>', '~', ';', '(', ')', ',', '/', '&', '@'];
+
+    var COMMENT         = 1;
+    var FUNCTION        = 2;
+    var KEYWORD         = 4;
+    var DECLARATION     = 8;
+    var RULE            = 16;
+    var SELECTOR        = 32;
+    var VALUE           = 64;
+    var CONDITION       = 128;
+
+    var HAS_SELECTOR    = 256;
+    var HAS_URL         = 512;
+    var HAS_VALUE       = 1024;
+    var HAS_CONDITION   = 2048;
+
+    var IS_OPENED       = 4096;
+    
+    var COLLAPSE_SELEC  = 8192;
+    var COLLAPSE_VALUE  = 16384;
+
+    var types = {
+        AtRule:         DECLARATION,
+        Argument:       VALUE | COLLAPSE_VALUE,
+        Comment:        COMMENT,
+        Condition:      CONDITION,
+        Declaration:    DECLARATION,
+        Function:       FUNCTION | COLLAPSE_VALUE,
+        Keyword:        KEYWORD,
+        NestedAtRule:   RULE | HAS_SELECTOR | COLLAPSE_SELEC,
+        Selector:       SELECTOR | COLLAPSE_SELEC,
+        Root:           RULE | COLLAPSE_SELEC | IS_OPENED,
+        Rule:           RULE | HAS_SELECTOR | COLLAPSE_SELEC,
+        Value:          VALUE | COLLAPSE_VALUE
+    };
+
+    var atRulesTypes = {
+        '@media':       RULE | HAS_CONDITION | COLLAPSE_SELEC,
+        '@keyframes':   RULE | HAS_VALUE | COLLAPSE_SELEC,
+        '@font-face':   RULE | COLLAPSE_SELEC,
+        '@supports':    RULE | HAS_CONDITION | COLLAPSE_SELEC,
+        '@document':    RULE | HAS_SELECTOR | COLLAPSE_SELEC,
+        '@import':      DECLARATION | HAS_URL | HAS_CONDITION,
+        '@charset':     DECLARATION | HAS_VALUE,
+        '@namespace':   DECLARATION | HAS_VALUE | HAS_URL,
+    };
+
+    var uniqueArgumentFunctions = ['url', 'src'];
+
+    var Parser = function (code, parent) {
+        this.code = code;
+        this.parent = parent;
+    };
+
+    Parser.prototype = {
+        add: function (item) {
+            item._data = {
+                sourceColumn: this.col,
+                sourceLine: this.line
+            };
+
+            this.current.push(item);
+
+            return item;
+        },
+
+        down: function (item) {
+            this.current = this.add(item);
+            this.treeTypes.push(this.currType);
+
+            if ((this.current.type === 'AtRule' || this.current.type === 'NestedAtRule') && atRulesTypes['@' + this.current.name]) {
+                this.currType = atRulesTypes['@' + this.current.name];
+            } else {
+                this.currType = types[item.type];
+            }
+
+            return this;
+        },
+
+        up: function () {
+            if (!this.current._parent) {
+                switch (this.current.type) {
+                    case 'Value':
+                        this.current._parent = new stylecow.Declaration;
+                        break;
+
+                    case 'Argument':
+                        this.current._parent = new stylecow.Function;
+                        break;
+
+                    case 'Function':
+                    case 'Keyword':
+                        this.current._parent = new stylecow.Value;
+                        break;
+
+                    case 'Condition':
+                    case 'Selector':
+                        this.current._parent = new stylecow.Rule;
+                        break;
+
+                    default:
+                        this.current._parent = new stylecow.Root;
+                        break;
+                }
+
+                this.treeTypes.unshift(types[this.current._parent.type]);
+                this.current._parent.push(this.current);
+            }
+
+            this.current = this.current._parent;
+            this.currType = this.treeTypes.pop();
+
+            return this;
+        },
+
+        run: function () {
+            this.pos = 0;
+            this.col = 0;
+            this.line = 0;
+            this.buffer = '';
+            this.currChar = '';
+            this.length = this.code.length;
+
+            this.treeTypes = [];
+            this.currType = types[this.parent.type];
+            this.current = this.parent;
+
+            if (this.currType & RULE) {
+                this.currType = this.currType | IS_OPENED;
+            }
+
+            while (this.next()) {
+                if (this.seek()) {
+                    continue;
+                }
+
+                if (keyChars.indexOf(this.currChar) !== -1) {
+                    if (!this[this.currChar]()) {
+                        this.buffer += this.currChar;
+                    } else {
+                        this.buffer = '';
+                    }
+                } else {
+                    this.buffer += this.currChar;
+                }
+            }
+
+            if (this.buffer) {
+                this.end();
+            }
+
+            return this.parent;
+        },
+
+        next: function () {
+            this.currChar = this.code[this.pos];
+            ++this.pos;
+
+            if (this.pos > this.length) {
+                return false;
+            }
+
+            if (this.currChar === '\n') {
+                ++this.line;
+                this.col = 0;
+            } else {
+                ++this.col;
+            }
+
+            return true;
+        },
+
+        seek: function () {
+            //Quotes
+            if (this.currChar === '"' || this.currChar === "'") {
+                var c = this.currChar;
+                this.buffer += this.currChar;
+
+                while (this.next()) {
+                    this.buffer += this.currChar;
+
+                    if (this.currChar === c) {
+                        break;
+                    }
+                }
+
+                return true;
+            }
+
+            if (this.currType & COLLAPSE_SELEC) {
+                if (this.buffer.trim()) {
+                    this.collapse(collapsedSelector);
+                    return false;
+                }
+            }
+
+            else if (this.currType & COLLAPSE_VALUE) {
+                if (this.buffer.trim()) {
+                    this.collapse(collapsedValue);
+                    return false;
+                }
+            }
+
+            if (!this.buffer && collapsedSpaces.indexOf(this.currChar) !== -1) {
+                return true;
+            }
+        },
+
+        end: function () {
+            if (this.currType & VALUE || this.currType & SELECTOR) {
+                this.add(new stylecow.Keyword(this.buffer));
+            }
+
+            else if (this.currType & FUNCTION) {
+                this.add(new stylecow.Argument).add(new stylecow.Keyword(this.buffer));
+            }
+
+            else if (this.currType & DECLARATION) {
+                this.add(new stylecow.Value).add(new stylecow.Keyword(this.buffer));
+            }
+        },
+
+        collapse: function (validChars) {
+            if (validChars.indexOf(this.currChar) !== -1) {
+                var c = this.currChar.trim();
+                var next = this.code[this.pos];
+
+                while (validChars.indexOf(next) !== -1) {
+                    if (collapsedSpaces.indexOf(next) === -1) {
+                        if (c) {
+                            break;
+                        }
+
+                        c = next;
+                    }
+                    this.next();
+                    next = this.code[this.pos];
+                }
+
+                this.currChar = c || ' ';
+            }
+        },
+
+        '{': function () {
+            if (this.currType & RULE) {
+                if (!this.buffer) {
+                    this.currType = this.currType | IS_OPENED;
+                    return true;
+                }
+
+                if (this.currType & IS_OPENED) {
+                    this.down(new stylecow.Rule).notOpenedRuleOrDeclaration();
+
+                    if (this.currType & SELECTOR) {
+                        this.up();
+                    }
+                    
+                    this.currType = this.currType | IS_OPENED;
+
+                    return true;
+                }
+
+                this.notOpenedRuleOrDeclaration();
+
+                if (this.currType & SELECTOR) {
+                    this.up();
+                }
+
+                this.currType = this.currType | IS_OPENED;
+                return true;
+            }
+
+            if (this.currType & SELECTOR) {
+                this.selector();
+                this.up();
+                this.currType = this.currType | IS_OPENED;
+                return true;
+            }
+        },
+
+        '}': function () {
+            if (this.currType & RULE) {
+                this.up();
+                return true;
+            }
+
+            else if (this.currType & DECLARATION) {
+                this.up().up();
+                return true;
+            }
+
+            else if (this.currType & VALUE) {
+                if (this.buffer) {
+                    this.add(new stylecow.Keyword(this.buffer));
+                }
+                this.up().up().up();
+                return true;
+            }
+        },
+
+        ':': function () {
+            if (this.currType & RULE) {
+                if (this.currType & IS_OPENED) {
+                    if (this.isNested()) {
+                        return this.down(new stylecow.Rule).notOpenedRuleOrDeclaration();
+                    }
+
+                    this.down(new stylecow.Declaration(this.buffer)).down(new stylecow.Value);
+                    return true;
+                }
+            }
+
+            else if (this.buffer && this.buffer.substr(-1) !== ':') {
+                return this.selector();
+            }
+        },
+
+        ' ': function () {
+            if (this.currType & VALUE) {
+                this.add(new stylecow.Keyword(this.buffer));
+                return true;
+            }
+
+            else if (this.currType & RULE) {
+                if (this.currType & IS_OPENED) {
+                    return this.down(new stylecow.Rule).notOpenedRuleOrDeclaration(true);
+                } else {
+                    return this.notOpenedRuleOrDeclaration(true);
+                }
+            }
+
+            else if (this.currType & DECLARATION) {
+                return this.notOpenedRuleOrDeclaration(true);
+            }
+        },
+
+        ',': function () {
+            if (this.currType & FUNCTION) {
+                if (this.buffer) {
+                    this.add(new stylecow.Argument).add(new stylecow.Keyword(this.buffer));
+                }
+
+                this.down(new stylecow.Argument);
+
+                return true;
+            }
+
+            if (this.currType & DECLARATION) {
+                if (this.buffer) {
+                    this.add(new stylecow.Value).add(new stylecow.Keyword(this.buffer));
+                }
+
+                this.down(new stylecow.Value);
+                return true;
+            }
+
+            if (this.currType & VALUE) {
+                if (this.buffer) {
+                    this.add(new stylecow.Keyword(this.buffer));
+                }
+
+                var child = new stylecow[this.current.type];
+                this.up().down(child);
+                return true;
+            }
+
+            if (this.currType & RULE) {
+                if (this.currType & IS_OPENED) {
+                    this.down(new stylecow.Rule);
+                }
+
+                return this.notOpenedRuleOrDeclaration();
+            }
+
+            if (this.currType & SELECTOR) {
+                this.selector();
+                this.up().down(new stylecow.Selector);
+                return true;
+            }
+        },
+
+        '*': function () {
+            return this.selectorOrRule();
+        },
+
+        '.': function () {
+            return this.selectorOrRule();
+        },
+
+        '[': function () {
+            return this.selectorOrRule();
+        },
+
+        '#': function () {
+            return this.selectorOrRule();
+        },
+
+        '+': function () {
+            return this.selectorOrRule(true);
+        },
+
+        '>': function () {
+            return this.selectorOrRule(true);
+        },
+
+        '~': function () {
+            return this.selectorOrRule(true);
+        },
+
+        ';': function () {
+            if (this.currType & VALUE) {
+                if (this.buffer) {
+                    this.add(new stylecow.Keyword(this.buffer));
+                }
+                this.up().up();
+                return true;
+            }
+
+            else if (this.currType & DECLARATION) {
+                if (this.buffer) {
+                    this.notOpenedRuleOrDeclaration();
+                }
+                this.up();
+                return true;
+            }
+        },
+
+        '(': function () {
+            if (this.buffer) {
+                if (this.currType & VALUE || this.currType & SELECTOR || this.currType & HAS_URL) {
+                    this.down(new stylecow.Function(this.buffer));
+
+                    if (uniqueArgumentFunctions.indexOf(this.buffer) !== -1) {
+                        this.buffer = '';
+
+                        while (this.next()) {
+                            if (this.currChar === ')') {
+                                return this[')']();
+                            }
+
+                            this.buffer += this.currChar;
+                        }
+                    }
+
+                    this.down(new stylecow.Argument);
+                    return true;
+                }
+            } else {
+                if (this.currType & DECLARATION || (this.currType & RULE && !(this.currType & IS_OPENED))) {
+                    return this.notOpenedRuleOrDeclaration();
+                }
+            }
+        },
+
+        ')': function () {
+            if (this.current.type === 'Argument') {
+                if (this.buffer) {
+                    this.add(new stylecow.Keyword(this.buffer));
+                }
+
+                this.up().up();
+                return true;
+            }
+
+            if (this.currType & FUNCTION) {
+                if (this.buffer) {
+                    this.add(new stylecow.Argument).add(new stylecow.Keyword(this.buffer));
+                }
+
+                this.up();
+                return true;
+            }
+        },
+
+        '&': function () {
+            if (this.currType & RULE) {
+                this.down(new stylecow.Rule);
+
+                return this.notOpenedRuleOrDeclaration(true);
+            }
+        },
+
+        '@': function () {
+            if (this.currType & RULE) {
+                this.buffer += this.currChar;
+
+                while (this.next() && collapsedSpaces.indexOf(this.currChar) === -1) {
+                    this.buffer += this.currChar;
+                }
+
+                var nested;
+
+                if (atRulesTypes[this.buffer]) {
+                    nested = atRulesTypes[this.buffer] & RULE;
+                } else {
+                    nested = this.isNested();
+                }
+
+                if (nested) {
+                    this.down(new stylecow.NestedAtRule(this.buffer));
+                } else {
+                    this.down(new stylecow.AtRule(this.buffer));
+                }
+
+                return true;
+            }
+        },
+
+        '/': function () {
+            if (this.code[this.pos] === '*') {
+                var c = '';
+
+                this.next();
+
+                while (this.next()) {
+                    c += this.currChar;
+
+                    if (this.currChar === '*' && this.code[this.pos] === '/') {
+                        this.add(new stylecow.Comment(c.slice(0, -1)));
+                        this.next();
+                        return true;
+                    }
+                }
+            }
+        },
+
+        selectorOrRule: function (operator) {
+            if (this.currType & SELECTOR) {
+                return this.selector(operator);
+            }
+
+            if (this.currType & RULE) {
+                if (this.currType & IS_OPENED) {
+                    this.down(new stylecow.Rule);
+                }
+                
+                return this.notOpenedRuleOrDeclaration(operator);
+            }
+        },
+
+        selector: function (operator) {
+            if (this.buffer) {
+                this.add(new stylecow.Keyword(this.buffer));
+                this.buffer = '';
+            }
+
+            if (operator) {
+                this.add(new stylecow.Keyword(this.currChar));
+                return true;
+            }
+        },
+
+        isNested: function () {
+            var isNested = this.code.indexOf('{', this.pos);
+
+            return (isNested !== -1 && isNested < this.code.indexOf(';', this.pos) && isNested < this.code.indexOf('}', this.pos));
+        },
+
+        notOpenedRuleOrDeclaration: function (operator) {
+            if (this.currType & HAS_VALUE) {
+                if ((this.buffer[0] !== '"' && this.buffer[0] !== "'") || !(this.currType & HAS_URL)) {
+                    this.add(new stylecow.Value).add(new stylecow.Keyword(this.buffer));
+                    this.currType = this.currType ^ HAS_VALUE;
+                    return true;
+                }
+            }
+
+            if (this.currType & HAS_URL) {
+                var matches = this.buffer.trim().match(/^(url\(|'|")['"]?([^'"\)]+)/);
+
+                if (matches) {
+                    this.add(new stylecow.Function('url')).add(new stylecow.Argument).add(new stylecow.Keyword(matches[2]));
+                    this.currType = this.currType ^ HAS_URL;
+                    return true;
+                }
+            }
+
+            if (this.currType & HAS_SELECTOR) {
+                this.down(new stylecow.Selector);
+                return this.selector(operator);
+            }
+
+            if (this.currType & HAS_CONDITION) {
+                this.buffer += this.currChar;
+                var deep = (this.currChar === '(') ? 1 : 0;
+
+                while (this.next()) {
+                    if (this.currChar === '(') {
+                        ++deep;
+                    }
+
+                    else if (this.currChar === ')') {
+                        --deep;
+                    }
+
+                    else if (!deep) {
+                        if (this.currChar === '{') {
+                            this.current.add(new stylecow.Condition(this.buffer.trim()));
+                            this.currType = this.currType ^ HAS_CONDITION;
+                            this.currType = this.currType | IS_OPENED;
+                            return true;
+                        }
+
+                        else if (this.currChar === ';') {
+                            this.current.add(new stylecow.Condition(this.buffer.trim()));
+                            this.currType = this.currType ^ HAS_CONDITION;
+                            this.up();
+                            return true;
+                        }
+                    }
+
+                    this.buffer += this.currChar;
+                }
+            }
+        }
+    };
+
+    stylecow.parse = function (code, parent) {
+        if (typeof parent === 'string') {
+            parent = new stylecow[parent];
+        } else {
+            parent = parent || new stylecow.Root();
+        }
+
+        var parser = new Parser('' + code, parent);
+
+        return parser.run();
+    };
+
+})(require('./index'));
+
+},{"./index":50}],"stylecow-plugin-color":[function(require,module,exports){
 //http://dev.w3.org/csswg/css-color/
 
 var color = require('stylecow-color');
@@ -3566,7 +3771,7 @@ module.exports = function (stylecow) {
 
 		//Convert hex + alpha values to rgba values
 		Keyword: function (keyword) {
-			if (keyword.name[0] === '#' && (keyword.name.length === 5 || keyword.name.length === 9) && keyword.ancestor('Declaration')) {
+			if (keyword.name[0] === '#' && (keyword.name.length === 5 || keyword.name.length === 9) && keyword.ancestor({type: 'Declaration'})) {
 				var rgba = color.toRGBA(keyword.name);
 
 				if (rgba[3] === 1) {
@@ -3581,12 +3786,12 @@ module.exports = function (stylecow) {
 
 			//Convert gray() function to rgba/hex values
 			gray: function (fn) {
-				var rgba = color.toRGBA(fn.content, 'gray');
+				var rgba = color.toRGBA(fn.getContent(), 'gray');
 
 				if (rgba[3] === 1) {
 					fn.replaceWith('#' + color.RGBA_HEX(rgba));
 				} else {
-					fn.content = rgba;
+					fn.setContent(rgba);
 					fn.name = 'rgba';
 				}
 			},
@@ -3596,95 +3801,93 @@ module.exports = function (stylecow) {
 				var args = fn[0];
 				var rgba;
 
-				if (args.type === 'Value') {
-					rgba = color.toRGBA(args[0]);
-					args[0].remove();
-				} else {
-					rgba = color.toRGBA(args);
-					args.remove();
-					args = [];
-				}
+				rgba = color.toRGBA(args[0]);
+				args[0].remove();
 
 				args.forEach(function (adjust) {
+					var args = adjust.getContent();
+
 					switch (adjust.name) {
 						case 'alpha':
 						case 'a':
-							rgba[3] = modify(rgba[3], adjust[0].name, 1);
+							rgba[3] = modify(rgba[3], args[0], 1);
 							break;
 
 						case 'red':
-							rgba[0] = modify(rgba[0], adjust[0].name, 255);
+							rgba[0] = modify(rgba[0], args[0], 255);
 							break;
 
 						case 'green':
-							rgba[1] = modify(rgba[1], adjust[0].name, 255);
+							rgba[1] = modify(rgba[1], args[0], 255);
 							break;
 
 						case 'blue':
-							rgba[2] = modify(rgba[2], adjust[0].name, 255);
+							rgba[2] = modify(rgba[2], args[0], 255);
 							break;
 
 						case 'rgb':
-							rgba[0] = modify(rgba[0], adjust[0].name, 255);
-							rgba[1] = modify(rgba[1], adjust[1].name, 255);
-							rgba[2] = modify(rgba[2], adjust[2].name, 255);
+							rgba[0] = modify(rgba[0], args[0], 255);
+							rgba[1] = modify(rgba[1], args[1], 255);
+							rgba[2] = modify(rgba[2], args[2], 255);
 							break;
 
 						case 'saturation':
 						case 's':
 							var hsla = color.RGBA_HSLA(rgba);
-							hsla[1] = modify(hsla[1], adjust[0].name, 100);
+							hsla[1] = modify(hsla[1], args[0], 100);
 							rgba = color.HSLA_RGBA(hsla);
 							break;
 
 						case 'lightness':
 						case 'l':
 							var hsla = color.RGBA_HSLA(rgba);
-							hsla[2] = modify(hsla[2], adjust[0].name, 100);
+							hsla[2] = modify(hsla[2], args[0], 100);
 							rgba = color.HSLA_RGBA(hsla);
 							break;
 
 						case 'whiteness':
 						case 'w':
 							var hwba = color.RGBA_HWBA(rgba);
-							hwba[1] = modify(hwba[1], adjust[0].name, 100);
+							hwba[1] = modify(hwba[1], args[0], 100);
 							rgba = color.HWBA_RGBA(hwba);
 							break;
 
 						case 'blackness':
 						case 'b':
 							var hwba = color.RGBA_HWBA(rgba);
-							hwba[2] = modify(hwba[2], adjust[0].name, 100);
+							hwba[2] = modify(hwba[2], args[0], 100);
 							rgba = color.HWBA_RGBA(hwba);
 							break;
 
 						case 'blend':
 							var c = color.toRGBA(adjust[0][0]);
+							var p = adjust[0][1].toString();
 
-							rgba[0] = blend(rgba[0], c[0], adjust[0][1].name, 255);
-							rgba[1] = blend(rgba[1], c[1], adjust[0][1].name, 255);
-							rgba[2] = blend(rgba[2], c[2], adjust[0][1].name, 255);
+							rgba[0] = blend(rgba[0], c[0], p, 255);
+							rgba[1] = blend(rgba[1], c[1], p, 255);
+							rgba[2] = blend(rgba[2], c[2], p, 255);
 							break;
 
 						case 'blenda':
 							var c = color.toRGBA(adjust[0][0]);
+							var p = adjust[0][1].toString();
 
-							rgba[0] = blend(rgba[0], c[0], adjust[0][1].name, 255);
-							rgba[1] = blend(rgba[1], c[1], adjust[0][1].name, 255);
-							rgba[2] = blend(rgba[2], c[2], adjust[0][1].name, 255);
-							rgba[3] = blend(rgba[3], c[3], adjust[0][1].name, 1);
+							rgba[0] = blend(rgba[0], c[0], p, 255);
+							rgba[1] = blend(rgba[1], c[1], p, 255);
+							rgba[2] = blend(rgba[2], c[2], p, 255);
+							rgba[3] = blend(rgba[3], c[3], p, 1);
 							break;
 
 						case 'tint':
-							rgba[0] = blend(rgba[0], 255, adjust[0].name, 255);
-							rgba[1] = blend(rgba[1], 255, adjust[0].name, 255);
-							rgba[2] = blend(rgba[2], 255, adjust[0].name, 255);
+							rgba[0] = blend(rgba[0], 255, args[0], 255);
+							rgba[1] = blend(rgba[1], 255, args[0], 255);
+							rgba[2] = blend(rgba[2], 255, args[0], 255);
 							break;
 
 						case 'shade':
-							rgba[0] = blend(rgba[0], 0, adjust[0].name, 255);
-							rgba[1] = blend(rgba[1], 0, adjust[0].name, 255);
-							rgba[2] = blend(rgba[2], 0, adjust[0].name, 255);
+							rgba[0] = blend(rgba[0], 0, args[0], 255);
+							rgba[1] = blend(rgba[1], 0, args[0], 255);
+							rgba[2] = blend(rgba[2], 0, args[0], 255);
 							break;
 
 						case 'contrast':
@@ -3692,19 +3895,19 @@ module.exports = function (stylecow) {
 							var hwba = color.RGBA_HWBA(rgba);
 
 							if (hsla[2] < 50) { //is dark +50%
-								hwba[1] = modify(hwba[1], adjust[0].name, 100);
+								hwba[1] = modify(hwba[1], args[0], 100);
 							} else {
-								hwba[2] = modify(hwba[2], adjust[0].name, 100);
+								hwba[2] = modify(hwba[2], args[0], 100);
 							}
 							rgba = color.HWBA_RGBA(hwba);
 					}
 				});
 
+
 				if (rgba[3] === 1) {
 					fn.replaceWith('#' + color.RGBA_HEX(rgba));
 				} else {
-					fn.content = rgba;
-					fn.name = 'rgba';
+					fn.setContent(rgba).name = 'rgba';
 				}
 			}
 		}
@@ -3800,12 +4003,15 @@ module.exports = function (stylecow) {
 				explorer: 11.0
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, 'display', ['flex', 'inline-flex'])) {
-					return declaration.insertBefore('display: -ms-' + declaration.value + 'box');
+				if (declaration.is({
+					name: 'display',
+					value: ['flex', 'inline-flex']
+				})) {
+					return declaration.before('display: -ms-' + declaration.value + 'box');
 				}
 				
 				if (declaration.name === 'flex-wrap') {
-					return declaration.insertBefore('-ms-flex-wrap: ' + (declaration.value === 'nowrap' ? 'none' : declaration.value));
+					return declaration.before('-ms-flex-wrap: ' + (declaration.value === 'nowrap' ? 'none' : declaration.value));
 				}
 				
 				if (declaration.name === 'flex-grow') {
@@ -3821,22 +4027,22 @@ module.exports = function (stylecow) {
 				}
 				
 				if (declaration.name === 'justify-content') {
-					return declaration.insertBefore('-ms-flex-pack: ' + alignmentValue(declaration.value));
+					return declaration.before('-ms-flex-pack: ' + alignmentValue(declaration.value));
 				}
 				
 				if (declaration.name === 'align-items') {
-					return declaration.insertBefore('-ms-flex-align: ' + alignmentValue(declaration.value));
+					return declaration.before('-ms-flex-align: ' + alignmentValue(declaration.value));
 				}
 				
 				if (declaration.name === 'align-self') {
-					return declaration.insertBefore('-ms-flex-item-align: ' + alignmentValue(declaration.value));
+					return declaration.before('-ms-flex-item-align: ' + alignmentValue(declaration.value));
 				}
 				
 				if (declaration.name === 'align-content') {
-					return declaration.insertBefore('-ms-flex-line-pack: ' + alignmentValue(declaration.value));
+					return declaration.before('-ms-flex-line-pack: ' + alignmentValue(declaration.value));
 				}
 
-				if (declaration.is(null, /^flex/)) {
+				if (declaration.is({name: /^flex/})) {
 					return declaration.cloneBefore().name = '-ms-' + declaration.name;
 				}
 			}
@@ -3852,8 +4058,11 @@ module.exports = function (stylecow) {
 			},
 			Declaration: {
 				display: function (declaration) {
-					if (declaration.is(null, null, ['flex', 'inline-flex'])) {
-						declaration.insertBefore('display: -webkit-' + declaration.value.replace('flex', 'box'));
+					if (declaration.is({
+						name: 'display',
+						value: ['flex', 'inline-flex']
+					})) {
+						declaration.before('display: -webkit-' + declaration.value.replace('flex', 'box'));
 					}
 				},
 				"flex-direction": function (declaration) {
@@ -3882,16 +4091,16 @@ module.exports = function (stylecow) {
 							return false;
 					}
 
-					declaration.insertBefore('-webkit-box-orient:' + orient);
+					declaration.before('-webkit-box-orient:' + orient);
 
 					if (direction) {
-						declaration.insertBefore('-webkit-box-direction:' + direction);
+						declaration.before('-webkit-box-direction:' + direction);
 					}
 				},
 				order: function (declaration) {
 					var value = (declaration.value == 0) ? 1 : property.value;
 
-					declaration.insertBefore('-webkit-box-ordinal-group:' + value);
+					declaration.before('-webkit-box-ordinal-group:' + value);
 				},
 				"justify-content": function (declaration) {
 					var value = alignmentValue(declaration.value);
@@ -3900,16 +4109,16 @@ module.exports = function (stylecow) {
 						value = 'justify';
 					}
 
-					declaration.insertBefore('-webkit-box-pack:' + value);
+					declaration.before('-webkit-box-pack:' + value);
 				},
 				"align-items": function (declaration) {
-					declaration.insertBefore('-webkit-box-align:' + alignmentValue(declaration.value));
+					declaration.before('-webkit-box-align:' + alignmentValue(declaration.value));
 				},
 				"flex-grow": function (declaration) {
-					declaration.insertBefore('-webkit-box-flex:' + declaration.value);
+					declaration.before('-webkit-box-flex:' + declaration.value);
 				},
 				"flex": function (declaration) {
-					declaration.insertBefore('-webkit-box-flex:' + declaration.value);
+					declaration.before('-webkit-box-flex:' + declaration.value);
 				}
 			}
 		},
@@ -3923,12 +4132,17 @@ module.exports = function (stylecow) {
 				ios: 7.0
 			},
 			Declaration: function (declaration) {
-				if (declaration.is(null, /^(flex.*|align.*|justify-content|order)$/)) {
-					return declaration.cloneBefore().name = '-webkit-' + declaration.name;
+				if (declaration.is({
+					name: 'display',
+					value: ['flex', 'inline-flex']
+				})) {
+					return declaration.cloneBefore().setContent('-webkit-' + declaration.value);
 				}
 
-				if (declaration.is(null, 'display', ['flex', 'inline-flex'])) {
-					return declaration.cloneBefore().value = '-webkit-' + declaration.value;
+				if (declaration.is({
+					name: /^(flex.*|align.*|justify-content|order)$/
+				})) {
+					return declaration.cloneBefore().name = '-webkit-' + declaration.name;
 				}
 			}
 		}
@@ -4105,158 +4319,11 @@ module.exports = function (stylecow) {
 		},
 		Declaration: function (declaration) {
 			if (declaration.value === 'initial') {
-				declaration.value = initials[declaration.name] || 'inherit';
+				declaration.setContent(initials[declaration.name] || 'inherit');
 			}
 		}
 	});
 };
-
-},{}],"stylecow-plugin-linear-gradient":[function(require,module,exports){
-module.exports = function (stylecow) {
-
-	stylecow.addTask([
-
-		// adds -moz- vendor prefix
-		{
-			disable: {
-				firefox: 10.0
-			},
-			"Function": {
-				'linear-gradient': function (fn) {
-					fn.ancestor('Declaration').cloneBefore().search('Function', 'linear-gradient').forEach(function (fn) {
-						fn.name = '-moz-linear-gradient';
-						fn[0].replaceWith(fixDirection(fn[0]));
-					});
-				}
-			}
-		},
-
-		// adds -o- vendor prefix
-		{
-			disable: {
-				opera: 12.1
-			},
-			"Function": {
-				'linear-gradient': function (fn) {
-					fn.ancestor('Declaration').cloneBefore().search('Function', 'linear-gradient').forEach(function (fn) {
-						fn.name = '-o-linear-gradient';
-						fn[0].replaceWith(fixDirection(fn[0]));
-					});
-				}
-			}
-		},
-
-		// adds -webkit- vendor prefix
-		{
-			disable: {
-				chrome: 26.0,
-				safari: 6.1,
-				ios: 7.0,
-				android: 4.4
-			},
-			"Function": {
-				'linear-gradient': function (fn) {
-					fn.ancestor('Declaration').cloneBefore().search('Function', 'linear-gradient').forEach(function (fn) {
-						fn.name = '-webkit-linear-gradient';
-						fn[0].replaceWith(fixDirection(fn[0]));
-					});
-				}
-			}
-		},
-
-		// adds the old syntax -webkit-gradient
-		{
-			disable: {
-				chrome: 10.0,
-				safari: 5.1,
-				android: 4.0
-			},
-			"Function": {
-				'linear-gradient': function (fn) {
-					fn.ancestor('Declaration').cloneBefore().search('Function', 'linear-gradient').forEach(function (fn) {
-						var newArgs = ['linear'];
-
-						//Calculate the gradient direction
-						var point = 'to bottom';
-
-						if (fn[0].is(null, /(top|bottom|left|right|deg)/)) {
-							point = fn.shift().toString();
-						}
-
-						switch (point) {
-							case 'to bottom':
-								newArgs.push('left top', 'left bottom');
-								break;
-
-							case 'to top':
-								newArgs.push('left bottom', 'left top');
-								break;
-
-							case 'to right':
-								newArgs.push('left top', 'right top');
-								break;
-
-							case 'to left':
-								newArgs.push('right top', 'left top');
-								break;
-
-							default:
-								if (/^\ddeg$/.test(point)) {
-									newArgs.push(parseInt(point, 10) + 'deg');
-								} else {
-									newArgs.push('left top', 'left bottom');
-								}
-						}
-
-						//Gradient colors and color stops
-						var total = fn.length - 1;
-
-						fn.forEach(function (param, i) {
-							var text;
-
-							if (i === 0) {
-								text = 'from';
-							} else if (i === total) {
-								text = 'to';
-							} else {
-								text = 'color-stop';
-							}
-
-							if (param.is('Keyword')) {
-								newArgs.push(text + '(' + param + ')');
-							} else {
-								newArgs.push(text + '(' + param[0] + param[1] + ')');
-							}
-						});
-
-						//Apply the changes
-						fn.name = '-webkit-gradient';
-						fn.content = newArgs;
-					});
-				}
-			}
-		}
-	]);
-};
-
-function fixDirection (direction) {
-	switch (direction.toString()) {
-		case 'to top':
-			return 'bottom';
-
-		case 'to bottom':
-			return 'top';
-
-		case 'to left':
-			return 'right';
-
-		case 'to right':
-			return 'left';
-
-		default:
-			return direction;
-	}
-}
 
 },{}],"stylecow-plugin-matches":[function(require,module,exports){
 module.exports = function (stylecow) {
@@ -4264,12 +4331,12 @@ module.exports = function (stylecow) {
 	stylecow.addTask({
 		"Function": {
 			":matches": function (fn) {
-				var selector = fn.ancestor('Selector');
-				var value = selector.name;
+				var selector = fn.parent({type: 'Selector'});
+				var value = selector.toString();
 				var search = fn.toString();
 
-				fn.content.forEach(function (replace) {
-					selector.insertBefore(stylecow.Selector.create(value.replace(search, replace)));
+				fn.getContent().forEach(function (replace) {
+					selector.before(new stylecow.Selector()).setContent(value.replace(search, replace));
 				});
 
 				selector.remove();
@@ -4281,49 +4348,72 @@ module.exports = function (stylecow) {
 },{}],"stylecow-plugin-nested-rules":[function(require,module,exports){
 module.exports = function (stylecow) {
 
+	var operators = ['>', '~', '+'];
+
 	stylecow.addTask({
 		Rule: function (rule) {
-			var ruleSelectors = rule.children('Selector');
+			var ruleSelectors = rule.children({type: 'Selector'});
 			var index = rule.index();
 
-			rule.children('Rule').forEach(function (child, i) {
-				child.children('Selector').forEach(function (childSelector) {
-					var space = ' ';
-					var prepend = false;
+			var i = 0;
 
-					if (childSelector.name[0] === '&') {
-						childSelector[0].name = childSelector[0].name.substr(1);
-						space = '';
+			rule.children({type: 'Rule'}).forEach(function (child) {
+				child.children({type: 'Selector'}).forEach(function (childSelector) {
+					var prepend;
 
-						if (/^\w/.test(childSelector[0].name)) {
-							prepend = true;
-						}
+					if (childSelector[0].name === '&') {
+						childSelector[0].remove();
+						prepend = /^\w/.test(childSelector[0].name);
+					} else if (operators.indexOf(childSelector[0].name) === -1) {
+						childSelector.unshift(new stylecow.Keyword(' '));
 					}
 
 					ruleSelectors.forEach(function (ruleSelector) {
-						var code;
+						var selector = child.add(new stylecow.Selector);
 
 						if (prepend) {
-							var content = ruleSelector.content;
+							ruleSelector.slice(0, -1).forEach(function (child) {
+								selector.push(child.clone());
+							});
 
-							code = content.slice(0, -1);
-							code.push(childSelector[0].name);
-							code.push(content.slice(-1));
-							code = code.concat(childSelector.slice(1)).join('');
+							childSelector.slice(0, 1).forEach(function (child) {
+								selector.push(child.clone());
+							});
+
+							ruleSelector.slice(-1).forEach(function (child) {
+								selector.push(child.clone());
+							});
+
+							childSelector.slice(1).forEach(function (child) {
+								selector.push(child.clone());
+							});
 						} else {
-							code = ruleSelector.name + space + childSelector.name;
-						}
+							ruleSelector.forEach(function (child) {
+								selector.push(child.clone());
+							});
 
-						child.add(stylecow.Selector.create(code));
+							childSelector.forEach(function (child) {
+								selector.push(child.clone());
+							});
+						}
 					});
 
-					childSelector.detach();
+					childSelector.remove();
 				});
 
-				rule.parent.add(child, index + i, true);
+				var prev = child.prev();
+
+				rule.parent().add(child, index + i + 1);
+
+				if (prev.type === 'Comment') {
+					child.before(prev);
+					++i;
+				}
+
+				++i;
 			});
 
-			if (rule.children('Selector').length === rule.length) {
+			if (rule.children({type: 'Selector'}).length === rule.length) {
 				rule.remove();
 			}
 		}
@@ -4376,28 +4466,28 @@ module.exports = function (stylecow) {
 
 		//Changes the default value on :root or html selectors
 		RuleBefore: function (rule) {
-			if (rule.hasChild('Selector', [':root', 'html'])) {
-				rule.children('Declaration', 'font-size').forEach(function (declaration) {
-					rule.ancestor('Root').setData('rem', toPixels(declaration.value));
+			if (rule.hasChild({type: 'Selector', string: [':root', 'html']})) {
+				rule.children({type: 'Declaration', name: 'font-size'}).forEach(function (declaration) {
+					rule.parent({type: 'Root'}).setData('rem', toPixels(declaration.getContent().join(', ')));
 				});
 			}
 		},
 
 		//Add the fallback
 		Declaration: function (declaration) {
-			var value = declaration.value;
+			var value = declaration.getContent().join(', ');
 
 			if (value.indexOf('rem') === -1) {
 				return false;
 			}
 
-			declaration.cloneBefore().value = value.replace(/([0-9\.]+)rem/, function (match) {
+			declaration.cloneBefore().setContent(value.replace(/([0-9\.]+)rem/, function (match) {
 				if (match[0] === '.') {
 					match = '0' + match;
 				}
 
 				return (declaration.getData('rem') * parseFloat(match, 10)) + 'px';
-			});
+			}));
 		}
 	});
 };
@@ -4433,22 +4523,23 @@ module.exports = function (stylecow) {
 		//Use var() function
 		"Function": {
 			var: function (fn) {
-				var arguments = fn.content;
-				var value = fn.ancestor('Rule').getData(arguments[0]) || arguments[1];
+				var arguments = fn.getContent();
+				var value = fn.parent({type: 'Rule'}).getData(arguments[0]) || arguments[1];
 
 				if (value) {
 					fn.replaceWith(value);
 				}
+
 			}
 		},
 
 		//Save new --variables
 		Declaration: function (declaration) {
 			if (declaration.name.indexOf('--') === 0) {
-				var rule = declaration.ancestor('Rule');
+				var rule = declaration.parent({type: 'Rule'});
 
-				if (rule.hasChild('Selector', [':root', 'html'])) {
-					rule.ancestor('Root').setData(declaration.name, declaration.value);
+				if (rule.hasChild({type: 'Selector', string: [':root', 'html']})) {
+					rule.parent({type: 'Root'}).setData(declaration.name, declaration.value);
 				} else {
 					rule.setData(declaration.name, declaration.value);
 				}

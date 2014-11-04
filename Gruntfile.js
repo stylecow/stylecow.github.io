@@ -13,7 +13,6 @@ module.exports = function(grunt) {
 					'stylecow-plugin-fixes',
 					'stylecow-plugin-flex',
 					'stylecow-plugin-initial',
-					'stylecow-plugin-linear-gradient',
 					'stylecow-plugin-matches',
 					'stylecow-plugin-nested-rules',
 					'stylecow-plugin-prefixes',

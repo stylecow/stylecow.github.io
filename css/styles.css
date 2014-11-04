@@ -36,12 +36,15 @@ a {
 		text-decoration: none;
 	}
 }
+
 p {
 	margin: 0.5em 0;
 }
+
 pre {
 	margin: 1em 0;
 }
+
 code {
 	border-radius: 3px;
 	background: var(--gray);
