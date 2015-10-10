@@ -17,23 +17,35 @@ features:
       text: |
         Don't learn a new syntax as with preprocessors such LESS or SASS. You write css and you get css, and if you stop using stylecow or change to other css processor your code will remain valid.
 
-    - title: Use latest or future features
+    - title: Fix css automatically
+      text: |
+        Vendor prefixes, old flexbox syntax, old webkit gradient, rem values, opacity, resolution media queries, pseudoselectors, etc. Don't spend your time fixing, but creating.
+
+    - title: Latest or future features
       text: |
         Variables, nested rules, custom media, custom selectors, color manipulation, extend, calc, flexbox, etc. All using the w3c syntax. [See all available plugins](/plugins).
 
+    - title: Advanced code generator
+      text: |
+        There are two styles (normal and minify) but you can create your own code style. Do you prefer spaces or tabs, simple or double quotes, `0.5em` or `.5em`?
+
     - title: Easy to install
       text: |
-        You don't have to install dozens of plugins and care about the correct order or these plugins (like POSTCSS). There's not plugin conflicts, just install and use.
+        No need to search and install dozens of packages and care about the correct order or the plugins (like POSTCSS). There's no plugin conflicts, just install and use.
+
+    - title: Easy to use
+      text: |
+        Stylecow was built with simplicity in mind. It can be used both by html+css developers without javascript knowledge as by people requiring a more advanced tool.
 
     - title: Easy to integrate
       text: |
-        The `stylecow.json` file contains your configuration (browser support, plugins, etc), that you can execute it directly or using [grunt](https://github.com/stylecow/grunt-stylecow), [gulp](https://github.com/stylecow/gulp-stylecow) or [webpack](https://github.com/stylecow/stylecow-loader).
+        The `stylecow.json` file contains all your settings (browser support, plugins to use, code format, etc). You can run it by CLI, [grunt](https://github.com/stylecow/grunt-stylecow), [gulp](https://github.com/stylecow/gulp-stylecow) or [webpack](https://github.com/stylecow/stylecow-loader).
 
     - title: Easy to extend
       text: |
-        There's a clean and good API to work with the stylecow's AST and create your own plugins easily in just minutes. [Learn how](https://github.com/stylecow/stylecow-core/wiki)
+        There's a clean and robust API to work with the AST and create plugins easily in just minutes. [Learn how](https://github.com/stylecow/stylecow-core/wiki)
 
-    - title: Easy use
+    - title: Easy to develop
       text: |
         A watcher `stylecow -w` and a browser live reload `stylecow -r` are included. Enought for simple use cases, if you don't want to install additional packages like browser-sync.
 
