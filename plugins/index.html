@@ -4,20 +4,15 @@ title: Stylecow - Plugins
 description: List of all plugins available for stylecow css processor
 
 plugins:
-    - title: Support for CSS incoming features
+    - title: Support for modern CSS
       text: |
-        Emulate some features not implemented yet in all browsers.
+        Emulate, fix or create fallbacks of css features.
 
       plugins:
         - title: color
           url:   'https://github.com/stylecow/stylecow-plugin-color'
           text: |
             Manipulate colors using the CSS Colors Module Level 4 syntax
-
-        - title: matches
-          url:   'https://github.com/stylecow/stylecow-plugin-matches'
-          text: |
-            Add support for `:matches()` selector 
 
         - title: calc
           url:   'https://github.com/stylecow/stylecow-plugin-calc'
@@ -34,10 +29,40 @@ plugins:
           text: |
             Add support for `@custom-selector` at-rule
 
+        - title: flex
+          url:   'https://github.com/stylecow/stylecow-plugin-flex'
+          text: |
+            Generate the css fallback for browsers supporting old syntax of flexbox (webkit and explorer).
+
+        - title: matches
+          url:   'https://github.com/stylecow/stylecow-plugin-matches'
+          text: |
+            Add support for `:matches()` selector 
+
+        - title: rem
+          url:   'https://github.com/stylecow/stylecow-plugin-rem'
+          text: |
+            Adds fallback for `rem` values in pixels.
+
         - title: variables
           url:   'https://github.com/stylecow/stylecow-plugin-variables'
           text: |
             Use variables in the CSS with the w3c standard syntax
+
+        - title: webkit-gradient
+          url:   'https://github.com/stylecow/stylecow-plugin-webkit-gradient'
+          text: |
+            Generate the css fallback for webkit browsers supporting the old syntax of css gradient.
+
+        - title: prefixes
+          url:   'https://github.com/stylecow/stylecow-plugin-prefixes'
+          text: |
+            Adds automatically all vendor prefixes needed. Uses the caniuse database to keep the prefixes updated.
+
+        - title: fixes
+          url:   'https://github.com/stylecow/stylecow-plugin-fixes'
+          text: |
+            Fixes automatically some well-known browsers issues like opacity, pseudoselectors, min-height, resolution mediaquery, etc.
 
     - title: Language extensions
       text: |
@@ -68,36 +93,6 @@ plugins:
           url:   'https://github.com/stylecow/stylecow-plugin-base64'
           text: |
             To embed base64-encoded images in the css 
-
-    - title: Code fixing
-      text: |
-        To fix css issues, or generate css fallback for old browsers
-
-      plugins:
-        - title: fixes
-          url:   'https://github.com/stylecow/stylecow-plugin-fixes'
-          text: |
-            Fixes automatically some well-known browsers issues
-
-        - title: flex
-          url:   'https://github.com/stylecow/stylecow-plugin-flex'
-          text: |
-            Generate the css fallback for browsers supporting old syntax of flexbox (webkit and explorer).
-
-        - title: webkit-gradient
-          url:   'https://github.com/stylecow/stylecow-plugin-webkit-gradient'
-          text: |
-            Generate the css fallback for webkit browsers supporting the old syntax of css gradient.
-
-        - title: prefixes
-          url:   'https://github.com/stylecow/stylecow-plugin-prefixes'
-          text: |
-            Adds automatically all vendor prefixes needed. Uses the caniuse database to keep the prefixes updated.
-
-        - title: rem
-          url:   'https://github.com/stylecow/stylecow-plugin-rem'
-          text: |
-            Adds fallback for `rem` values in pixels.
 
     - title: Old IE
       text: |
